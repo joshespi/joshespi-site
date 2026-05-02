@@ -1,16 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Restore the joshespi WordPress stack from a backup pair in ./backups/.
-#
-# Usage:
-#   ./scripts/restore.sh           # latest pair
-#   ./scripts/restore.sh 1         # one step back from latest
-#   ./scripts/restore.sh 3         # three steps back
-#
-# Pairs are matched by the YYYYMMDD-HHMMSS stamp in the filename.
-# The joshespi_db container must already be running and healthy.
-
 ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT_DIR"
 

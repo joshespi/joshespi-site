@@ -1,11 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Backs up the joshespi WordPress stack:
-#   - MariaDB dump from the joshespi_db container
-#   - Tarball of ./wp-content
-# Output goes to ./backups/ as a timestamped pair, then prunes to KEEP_LAST.
-
 ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT_DIR"
 
@@ -17,7 +12,6 @@ STAMP="$(date +%Y%m%d-%H%M%S)"
 DB_FILE="$BACKUP_DIR/joshespi-db-$STAMP.sql.gz"
 WP_FILE="$BACKUP_DIR/joshespi-wp-content-$STAMP.tar.gz"
 
-# Load DB creds from .env
 if [ ! -f .env ]; then
   echo "ERROR: .env not found in $ROOT_DIR" >&2
   exit 1
