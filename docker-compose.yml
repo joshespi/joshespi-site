@@ -42,8 +42,8 @@ services:
       WORDPRESS_CONFIG_EXTRA: |
         if ( getenv('WP_HOME') ) { define( 'WP_HOME', getenv('WP_HOME') ); }
         if ( getenv('WP_SITEURL') ) { define( 'WP_SITEURL', getenv('WP_SITEURL') ); }
-        if ( isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https' ) {
-          $_SERVER['HTTPS'] = 'on';
+        if ( isset($$_SERVER['HTTP_X_FORWARDED_PROTO']) && $$_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https' ) {
+          $$_SERVER['HTTPS'] = 'on';
         }
         define( 'MEDIA_TRASH', true );
         define( 'EMPTY_TRASH_DAYS', 30 );
