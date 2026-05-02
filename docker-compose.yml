@@ -1,0 +1,58 @@
+name: joshespi
+
+services:
+  joshespi_db:
+    image: mariadb:11.4
+    container_name: joshespi_db
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      MARIADB_ROOT_PASSWORD: ${MYSQL_ROOT}
+      MARIADB_USER: ${MYSQL_USER}
+      MARIADB_PASSWORD: ${MYSQL_PASSWORD}
+      MARIADB_DATABASE: joshespi
+    volumes:
+      - joshespi_db_data:/var/lib/mysql
+    ports:
+      - "127.0.0.1:3308:3306"
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  joshespi_web:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    container_name: joshespi_web
+    restart: unless-stopped
+    depends_on:
+      joshespi_db:
+        condition: service_healthy
+    env_file: .env
+    environment:
+      WORDPRESS_DB_NAME: joshespi
+      WORDPRESS_DB_HOST: joshespi_db
+      WORDPRESS_DB_USER: ${MYSQL_USER}
+      WORDPRESS_DB_PASSWORD: ${MYSQL_PASSWORD}
+      WORDPRESS_TABLE_PREFIX: je_
+      WORDPRESS_CONFIG_EXTRA: |
+        define( 'MEDIA_TRASH', true );
+        define( 'EMPTY_TRASH_DAYS', 30 );
+        define( 'DISALLOW_FILE_EDIT', true );
+        define( 'WP_AUTO_UPDATE_CORE', 'minor' );
+        define( 'AUTOMATIC_UPDATER_DISABLED', false );
+    ports:
+      - "8081:80"
+    volumes:
+      - ./wp-content:/var/www/html/wp-content
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost/wp-login.php"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+volumes:
+  joshespi_db_data:
