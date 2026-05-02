@@ -58,3 +58,22 @@ docker exec -u www-data joshespi_web wp <command>
 15 3 * * * cd /home/joshe/joshespi-site && ./scripts/backup.sh >> /var/log/joshespi-backup.log 2>&1
 30 3 * * * rsync -a /home/joshe/joshespi-site/backups/ user@remote:/path/to/joshespi-backups/
 ```
+
+## Restore
+
+```bash
+./scripts/restore.sh           # latest pair
+./scripts/restore.sh 1         # one step back
+./scripts/restore.sh 3         # three steps back
+```
+
+Wipes the current DB + `./wp-content` and restores from the matching pair. Stack must be up; web container is stopped/started around the wp-content extraction. Uses `sudo` for the wp-content wipe/extract/chown.
+
+**Cross-host restore** (e.g. seeding prod from a dev backup) — after running restore, fix the baked-in URLs:
+
+```bash
+docker exec -u www-data joshespi_web wp search-replace \
+  'http://localhost:8081' 'https://joshespi.com' --all-tables
+```
+
+Run this *after* DNS+TLS are live, or WP will redirect-loop you out of admin.
