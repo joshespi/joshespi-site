@@ -1,4 +1,5 @@
 .env
 wp-content/
 backups/
+joshespi_db_data/
 CLAUDE.md
