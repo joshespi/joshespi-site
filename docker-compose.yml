@@ -51,7 +51,7 @@ services:
         define( 'WP_AUTO_UPDATE_CORE', 'minor' );
         define( 'AUTOMATIC_UPDATER_DISABLED', false );
     ports:
-      - "8081:80"
+      - "127.0.0.1:8081:80"
     volumes:
       - ./wp-content:/var/www/html/wp-content
     healthcheck:
