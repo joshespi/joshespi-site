@@ -1,0 +1,7 @@
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <rect width="512" height="512" rx="112" fill="#111111"/>
+  <!-- The 'E' -->
+  <path d="M 136 116 L 356 116 L 356 176 L 216 176 L 216 226 L 316 226 L 316 286 L 216 286 L 216 336 L 356 336 L 356 396 L 136 396 Z" fill="#E53935"/>
+  <!-- The blinking cursor effect -->
+  <text x="370" y="410" font-family="monospace" font-size="90" fill="#E53935" font-weight="bold">_</text>
+</svg>

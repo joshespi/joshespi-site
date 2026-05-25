@@ -1,0 +1,20 @@
+@import '@fontsource-variable/inter';
+@import 'tailwindcss';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source '../**/*.blade.php';
+@source '../**/*.js';
+
+@theme {
+    --font-sans: 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
+    --font-mono: ui-monospace, 'Cascadia Code', 'Fira Code', monospace;
+
+    --color-brand:      #B52929;
+    --color-brand-dark: #8C1F1F;
+    --color-ink:        #111111;
+    --color-muted:      #6B7280;
+    --color-surface:    #E8EAED;
+    --color-canvas:     #F0F2F5;
+    --color-border:     #D1D5DB;
+}
