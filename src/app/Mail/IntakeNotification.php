@@ -16,7 +16,7 @@ class IntakeNotification extends Mailable
         public readonly string $name,
         public readonly string $email,
         public readonly string $service,
-        public readonly string $message,
+        public readonly string $body,
         public readonly array $details = [],
     ) {}
 

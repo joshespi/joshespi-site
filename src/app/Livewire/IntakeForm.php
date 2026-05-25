@@ -106,7 +106,7 @@ class IntakeForm extends Component
             name: $this->name,
             email: $this->email,
             service: $this->service,
-            message: $this->message,
+            body: $this->message,
             details: $this->extraDetails(),
         ));
 

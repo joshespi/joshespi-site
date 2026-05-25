@@ -27,7 +27,7 @@
 </table>
 
 <h3 style="margin-bottom: 8px;">Project details</h3>
-<p style="background: #f8f9fa; padding: 16px; border-radius: 4px; white-space: pre-wrap; margin: 0;">{{ $message }}</p>
+<p style="background: #f8f9fa; padding: 16px; border-radius: 4px; white-space: pre-wrap; margin: 0;">{{ $body }}</p>
 
 <hr style="margin: 24px 0; border: none; border-top: 1px solid #eee;">
 <p style="color: #888; font-size: 13px; margin: 0;">Sent from joshespi.com intake form. Reply-To is set to the sender's email.</p>
