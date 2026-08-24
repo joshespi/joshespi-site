@@ -19,6 +19,7 @@
             <nav class="hidden md:flex items-center gap-8 text-sm font-medium text-white/80">
                 <a href="/" class="hover:text-white transition-colors">Home</a>
                 <a href="/services" class="hover:text-white transition-colors">Services</a>
+                <a href="/work" class="hover:text-white transition-colors">Work</a>
                 <a href="/about" class="hover:text-white transition-colors">About</a>
             </nav>
             <a href="/services#intake"
@@ -37,6 +38,7 @@
             <p>&copy; {{ date('Y') }} Josh Espinoza. All rights reserved.</p>
             <nav class="flex gap-6">
                 <a href="/services" class="hover:text-white transition-colors">Services</a>
+                <a href="/work" class="hover:text-white transition-colors">Work</a>
                 <a href="/about" class="hover:text-white transition-colors">About</a>
                 <a href="/privacy" class="hover:text-white transition-colors">Privacy</a>
             </nav>
