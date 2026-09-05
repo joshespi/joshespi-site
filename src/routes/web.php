@@ -7,6 +7,7 @@ Route::view('/', 'home')->middleware('cache.headers:public;max_age=3600;etag');
 Route::view('/about', 'about')->middleware('cache.headers:public;max_age=3600;etag');
 Route::view('/work', 'work')->middleware('cache.headers:public;max_age=3600;etag');
 Route::view('/privacy', 'privacy')->middleware('cache.headers:public;max_age=3600;etag');
+Route::view('/terms', 'terms')->middleware('cache.headers:public;max_age=3600;etag');
 
 // Livewire form on this page — not cached
 Route::view('/services', 'services');
