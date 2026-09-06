@@ -8,7 +8,7 @@
 {{-- Hero --}}
 <section class="bg-ink text-white py-24 px-6">
     <div class="max-w-4xl mx-auto">
-        <p class="font-mono text-brand text-sm tracking-widest uppercase mb-6">// Available for hire</p>
+        <p class="font-mono text-brand text-sm tracking-widest uppercase mb-6 text-center">// Available for hire</p>
         <h1 class="text-4xl md:text-6xl font-black leading-tight mb-6 text-center">
             Fixed-price WordPress, Laravel, and DevOps work from a 15-year engineer.
         </h1>

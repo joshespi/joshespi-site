@@ -1,13 +1,16 @@
 <?php
 
+use App\Http\Controllers\SitemapController;
 use Illuminate\Support\Facades\Route;
 
-// Static brochure pages — publicly cacheable for 1 hour
-Route::view('/', 'home')->middleware('cache.headers:public;max_age=3600;etag');
-Route::view('/about', 'about')->middleware('cache.headers:public;max_age=3600;etag');
-Route::view('/work', 'work')->middleware('cache.headers:public;max_age=3600;etag');
-Route::view('/privacy', 'privacy')->middleware('cache.headers:public;max_age=3600;etag');
-Route::view('/terms', 'terms')->middleware('cache.headers:public;max_age=3600;etag');
+// Page list lives in config/pages.php so the sitemap stays in sync with it.
+foreach (config('pages') as $page) {
+    $route = Route::view($page['path'], $page['view']);
 
-// Livewire form on this page — not cached
-Route::view('/services', 'services');
+    if ($page['cache']) {
+        $route->middleware('cache.headers:public;max_age=3600;etag');
+    }
+}
+
+Route::get('/sitemap.xml', SitemapController::class)
+    ->middleware('cache.headers:public;max_age=86400;etag');

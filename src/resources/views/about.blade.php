@@ -7,7 +7,7 @@
 
 <section class="bg-ink text-white py-20 px-6">
     <div class="max-w-4xl mx-auto">
-        <p class="font-mono text-brand text-sm tracking-widest uppercase mb-4">About</p>
+        <p class="font-mono text-brand text-sm tracking-widest uppercase mb-4 text-center">About</p>
         <h1 class="text-4xl md:text-5xl font-black leading-tight mb-6 text-center">
             15 years building things that run.
         </h1>
