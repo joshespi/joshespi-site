@@ -18,7 +18,7 @@
 </section>
 
 <section class="py-20 px-6 bg-canvas">
-    <div class="max-w-4xl mx-auto grid md:grid-cols-2 gap-6">
+    <div class="max-w-6xl mx-auto grid md:grid-cols-2 lg:grid-cols-3 gap-5">
 
         @foreach([
             [
@@ -69,15 +69,23 @@
                 'github' => 'https://github.com/joshespi/espifam-site',
                 'image' => 'espifam',
             ],
+            [
+                'tag' => 'Web App',
+                'title' => "Espi's Tools",
+                'body' => 'A small collection of randomization utilities — weighted picker, passphrase generator, tip calculator, dice roller, coin flip, and a meme builder.',
+                'url' => 'https://tools.joshespi.com/',
+                'github' => 'https://github.com/joshespi/random-tools',
+                'image' => 'tools',
+            ],
         ] as $project)
-        <div class="bg-surface rounded-lg border border-border flex flex-col overflow-hidden {{ $loop->last && $loop->count % 2 !== 0 ? 'md:col-span-2' : '' }}">
+        <div class="bg-surface rounded-lg border border-border flex flex-col overflow-hidden">
             <img src="/images/work/{{ $project['image'] }}.webp" alt="Screenshot of {{ $project['title'] }}" loading="lazy"
-                 class="w-full h-48 object-cover object-top border-b border-border">
-            <div class="p-8 flex flex-col flex-1">
-                <p class="font-mono text-brand text-xs tracking-widest uppercase mb-3">{{ $project['tag'] }}</p>
-                <h3 class="text-xl font-bold mb-3">{{ $project['title'] }}</h3>
-                <p class="text-muted text-sm mb-6 flex-1">{{ $project['body'] }}</p>
-                <div class="flex items-center gap-6">
+                 class="w-full h-36 object-cover object-top border-b border-border">
+            <div class="p-6 flex flex-col flex-1">
+                <p class="font-mono text-brand text-xs tracking-widest uppercase mb-2">{{ $project['tag'] }}</p>
+                <h3 class="text-lg font-bold mb-2">{{ $project['title'] }}</h3>
+                <p class="text-muted text-sm mb-4 flex-1">{{ $project['body'] }}</p>
+                <div class="flex items-center gap-5">
                     <a href="{{ $project['url'] }}" target="_blank" rel="noopener noreferrer"
                        class="inline-flex items-center gap-2 font-mono text-sm text-brand hover:text-brand-dark transition-colors">
                         Visit site
