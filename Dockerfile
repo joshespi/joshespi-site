@@ -1,5 +1,8 @@
 FROM php:8.5-fpm
 
+# Node stays in this image even though the separate node container is gone:
+# entrypoint.sh runs "npm run build" against the bind-mounted source, because
+# public/build is gitignored and nothing else produces the Vite manifest.
 RUN apt-get update && apt-get install -y \
     git curl zip unzip libpng-dev libonig-dev libxml2-dev libzip-dev \
     && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip \

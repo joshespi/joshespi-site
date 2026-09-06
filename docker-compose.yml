@@ -5,12 +5,14 @@ services:
     build: .
     container_name: joshespi_app
     restart: unless-stopped
+    # Single source for config. The .env file is deliberately NOT also bind
+    # mounted: entrypoint.sh needs APP_ENV as a real environment variable, and
+    # Laravel reads real env vars fine without the file on disk.
     env_file: .env
     extra_hosts:
       - "host.docker.internal:host-gateway"
     volumes:
       - ./src:/var/www/html
-      - ./.env:/var/www/html/.env:ro
     networks:
       - joshespi_net
 
@@ -18,8 +20,13 @@ services:
     image: nginx:alpine
     container_name: joshespi_nginx
     restart: unless-stopped
+    # Loopback only. The nginx reverse proxy on the live host is the sole client,
+    # and it terminates TLS. Publishing on 0.0.0.0 let anyone on the internet
+    # reach this container directly and hand it a forged X-Forwarded-For, which
+    # defeats the realip chain in docker/nginx.conf and with it the intake form's
+    # per-IP rate limit.
     ports:
-      - "0.0.0.0:8081:80"
+      - "127.0.0.1:8081:80"
     volumes:
       - ./src/public:/var/www/html/public:ro
       - ./docker/nginx.conf:/etc/nginx/conf.d/default.conf:ro
