@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('title', 'My Work')
-@section('meta_description', 'Apps and projects built by Josh Espinoza — a TV show tracker, a self-hosted finance app, and a few side projects for fun.')
+@section('meta_description', 'Apps and projects built by Josh Espinoza — a TV show tracker, a free finance app, and a few side projects for fun.')
 
 @section('content')
 
@@ -32,7 +32,7 @@
             [
                 'tag' => 'Web App',
                 'title' => 'Complete Finance Tracker',
-                'body' => 'A free, self-hosted personal finance app that combines investment portfolio tracking (stocks, crypto, real estate) with envelope budgeting for everyday cash. No subscriptions, no selling your data.',
+                'body' => 'A free personal finance app that combines investment portfolio tracking (stocks, crypto, real estate) with envelope budgeting for everyday cash. Hosted for you at no cost — no subscriptions, no selling your data — or self-host it yourself if you\'d rather.',
                 'url' => 'https://finance.espifam.com/',
                 'github' => 'https://github.com/joshespi/personal-finance-tracker',
                 'image' => 'finance',
@@ -48,7 +48,7 @@
             [
                 'tag' => 'Podcast',
                 'title' => 'Crawlers in Waiting',
-                'body' => 'A fan-made podcast reading chapters from the Dungeon Crawler Carl series aloud, for fans of the books who want an audio version.',
+                'body' => 'A fan-made book club podcast discussing the Dungeon Crawler Carl series chapter by chapter, for fans who want to dig into the books together.',
                 'url' => 'https://crawlersinwaiting.com/',
                 'github' => 'https://github.com/joshespi/crawlers-in-waiting',
                 'image' => 'crawlers',
@@ -56,7 +56,7 @@
             [
                 'tag' => 'Web App',
                 'title' => 'Soundboard',
-                'body' => 'Build your own soundboards from your uploaded audio clips, then play them from a big-button touch grid. Made for my nephew so he doesn\'t need to download sketchy soundboard apps.',
+                'body' => 'Build your own soundboards from your uploaded audio clips, then play them from a big-button touch grid. Made for my son so he doesn\'t need to download sketchy soundboard apps.',
                 'url' => 'https://soundboard.joshespi.com/',
                 'github' => 'https://github.com/joshespi/soundboard',
                 'image' => 'soundboard',
