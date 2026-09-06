@@ -28,13 +28,5 @@ services:
     networks:
       - joshespi_net
 
-  node:
-    image: node:24-alpine
-    working_dir: /app
-    volumes:
-      - ./src:/app
-    profiles: ["build"]
-    command: ["npm", "run", "build"]
-
 networks:
   joshespi_net:
