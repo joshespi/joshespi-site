@@ -33,11 +33,18 @@ services:
     image: nginx:alpine
     container_name: joshespi_nginx
     restart: unless-stopped
-    # Loopback only. The nginx reverse proxy on the live host is the sole client,
-    # and it terminates TLS. Publishing on 0.0.0.0 let anyone on the internet
-    # reach this container directly and hand it a forged X-Forwarded-For, which
-    # defeats the realip chain in docker/nginx.conf and with it the intake form's
-    # per-IP rate limit.
+    # The TLS-terminating reverse proxy is nginx on a SEPARATE box; this is the
+    # docker host. Binding 127.0.0.1 here published the port to nobody at all —
+    # no other machine can route to this one's loopback — so every request to
+    # joshespi.com got a 502 from the proxy itself. That error page identifies
+    # the proxy build (nginx/1.24.0 Ubuntu), not the 1.31.1/alpine in here,
+    # which is how to tell this failure apart from a genuine upstream one.
+    #
+    # The forged X-Forwarded-For that the loopback bind was reaching for is
+    # dealt with where it belongs: set_real_ip_from in docker/nginx.conf now
+    # trusts the proxy alone rather than all of RFC1918, so a LAN peer that
+    # connects here directly has its XFF header ignored instead of believed.
+    # Set JOSHESPI_BIND_ADDR to a single interface to narrow this further.
     ports:
       - "${JOSHESPI_BIND_ADDR:-0.0.0.0}:8081:80"
     volumes:

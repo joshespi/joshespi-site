@@ -1,6 +1,14 @@
 # joshespi.com
 
-Laravel 12 + Livewire, self-hosted in Docker, behind host nginx. Port `0.0.0.0:8081`.
+Laravel 12 + Livewire, self-hosted in Docker, behind an nginx reverse proxy that
+runs on a **different machine** and terminates TLS. Published on `8081`.
+
+That split is load-bearing: the port must be reachable on the LAN, not just on
+the docker host's loopback, or the proxy has nothing to connect to and every
+request comes back 502. Set `JOSHESPI_BIND_ADDR` in `.env` to pin it to one
+interface; it defaults to `0.0.0.0`. The proxy's address is also the only one
+trusted by `set_real_ip_from` in `docker/nginx.conf` — update it there if the
+proxy ever moves, or client IPs (and the intake form's rate limit) go wrong.
 
 ## Stack
 
