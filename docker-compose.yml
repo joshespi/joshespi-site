@@ -13,6 +13,19 @@ services:
       - "host.docker.internal:host-gateway"
     volumes:
       - ./src:/var/www/html
+    # entrypoint.sh does the whole install-build-migrate sequence before it
+    # execs php-fpm, so "container running" says nothing about whether anything
+    # is listening. Probe the socket itself. php is the only tool in the image
+    # that can open one — there is no curl or nc here.
+    healthcheck:
+      test: ["CMD", "php", "-r", "exit(@fsockopen('127.0.0.1', 9000) ? 0 : 1);"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+      # Generous, because a cold boot has to run composer install and the Vite
+      # build off a bind mount. Failures inside this window don't count against
+      # retries, so a slow build is never mistaken for a broken container.
+      start_period: 300s
     networks:
       - joshespi_net
 
@@ -30,8 +43,15 @@ services:
     volumes:
       - ./src/public:/var/www/html/public:ro
       - ./docker/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./docker/maintenance.html:/usr/share/nginx/maintenance/__maintenance.html:ro
     depends_on:
-      - joshespi_app
+      joshespi_app:
+        # Wait for fpm to actually accept connections, not just for the
+        # container to exist. Without this a fresh "compose up" spent the whole
+        # build serving 502s. It does not cover a rebuild of the app alone —
+        # nginx keeps running there — which is what the error_page fallback and
+        # the runtime DNS lookup in nginx.conf are for.
+        condition: service_healthy
     networks:
       - joshespi_net
 
