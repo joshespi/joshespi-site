@@ -5,10 +5,37 @@
 
 @section('content')
 
+@php
+    // Shared by the FAQ section below and the FAQPage structured data at the
+    // bottom of this file — edit here and both stay in sync.
+    $faqs = [
+        [
+            'Do I have to get on a call?',
+            'No. Everything runs through the intake form and email. That\'s a deliberate choice — it produces a written record and better communication for both sides.',
+        ],
+        [
+            'How do I pay?',
+            '50% upfront via Stripe, 50% on delivery. You\'ll receive a Stripe payment link in your quote email.',
+        ],
+        [
+            'What if the scope changes?',
+            'Scope changes are handled in writing. If you add work, I\'ll send an updated quote before proceeding. No surprise charges.',
+        ],
+        [
+            'Do you offer ongoing support?',
+            'Yes — the Maintenance Retainer plans cover that. The Basic plan ($99/mo) includes weekly updates, daily backups, and uptime monitoring.',
+        ],
+        [
+            'What if I\'m not sure which service I need?',
+            'Fill the intake form and describe the situation. I\'ll read it and tell you what makes sense.',
+        ],
+    ];
+@endphp
+
 {{-- Hero --}}
 <section class="bg-ink text-white py-20 px-6">
     <div class="max-w-4xl mx-auto">
-        <p class="font-mono text-brand text-sm tracking-widest uppercase mb-4">Services</p>
+        <p class="font-mono text-brand text-sm tracking-widest uppercase mb-4 text-center">Services</p>
         <h1 class="text-4xl md:text-5xl font-black leading-tight mb-6 text-center">
             Fixed-price work. No calls required.
         </h1>
@@ -153,28 +180,7 @@
         <p class="font-mono text-brand text-xs tracking-widest uppercase mb-3">FAQ</p>
         <h2 class="text-2xl font-black mb-10">Common questions</h2>
         <div class="space-y-8">
-            @foreach([
-                [
-                    'Do I have to get on a call?',
-                    'No. Everything runs through the intake form and email. That\'s a deliberate choice — it produces a written record and better communication for both sides.',
-                ],
-                [
-                    'How do I pay?',
-                    '50% upfront via Stripe, 50% on delivery. You\'ll receive a Stripe payment link in your quote email.',
-                ],
-                [
-                    'What if the scope changes?',
-                    'Scope changes are handled in writing. If you add work, I\'ll send an updated quote before proceeding. No surprise charges.',
-                ],
-                [
-                    'Do you offer ongoing support?',
-                    'Yes — the Maintenance Retainer plans cover that. The Basic plan ($99/mo) includes weekly updates, daily backups, and uptime monitoring.',
-                ],
-                [
-                    'What if I\'m not sure which service I need?',
-                    'Fill the intake form and describe the situation. I\'ll read it and tell you what makes sense.',
-                ],
-            ] as [$q, $a])
+            @foreach($faqs as [$q, $a])
             <div class="border-b border-border pb-8">
                 <h3 class="font-bold mb-2">{{ $q }}</h3>
                 <p class="text-muted text-sm leading-relaxed">{{ $a }}</p>
@@ -195,5 +201,21 @@
         </div>
     </div>
 </section>
+
+
+@push('schema')
+@php
+    $faqSchema = [
+        '@context'   => 'https://schema.org',
+        '@type'      => 'FAQPage',
+        'mainEntity' => array_map(fn ($faq) => [
+            '@type'          => 'Question',
+            'name'           => $faq[0],
+            'acceptedAnswer' => ['@type' => 'Answer', 'text' => $faq[1]],
+        ], $faqs),
+    ];
+@endphp
+<x-json-ld :data="$faqSchema" />
+@endpush
 
 @endsection

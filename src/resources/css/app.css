@@ -6,6 +6,15 @@
 @source '../**/*.blade.php';
 @source '../**/*.js';
 
+/*
+    Alpine strips x-cloak once it boots. Without this rule the mobile nav and
+    the close-X icon in the header render expanded on every page load and then
+    snap shut, because nothing else hides them before Alpine runs.
+*/
+[x-cloak] {
+    display: none !important;
+}
+
 @theme {
     --font-sans: 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
     --font-mono: ui-monospace, 'Cascadia Code', 'Fira Code', monospace;

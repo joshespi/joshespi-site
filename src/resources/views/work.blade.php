@@ -5,9 +5,72 @@
 
 @section('content')
 
+@php
+    // Shared by the project grid below and the ItemList structured data at the
+    // bottom of this file — edit here and both stay in sync.
+    $projects = [
+        [
+            'tag' => 'Web App',
+            'title' => 'TV Tracker',
+            'body' => 'A free, ad-free way to track what you\'re watching. Search and follow any show, mark episodes and whole seasons watched, and get an email when something new airs.',
+            'url' => 'https://tvtime.joshespi.com/',
+            'github' => 'https://github.com/joshespi/tvtime',
+            'image' => 'tvtime',
+        ],
+        [
+            'tag' => 'Web App',
+            'title' => 'Complete Finance Tracker',
+            'body' => 'A free personal finance app that combines investment portfolio tracking (stocks, crypto, real estate) with envelope budgeting for everyday cash. Hosted for you at no cost — no subscriptions, no selling your data — or self-host it yourself if you\'d rather.',
+            'url' => 'https://finance.espifam.com/',
+            'github' => 'https://github.com/joshespi/personal-finance-tracker',
+            'image' => 'finance',
+        ],
+        [
+            'tag' => 'Game',
+            'title' => 'Dungeon Crawler Carl — Fan Game',
+            'body' => 'A browser-based dungeon crawler built for fun, inspired by the Dungeon Crawler Carl book series. All assets are generated at runtime — no image files required.',
+            'url' => 'https://dcc.joshespi.com/',
+            'github' => 'https://github.com/joshespi/dcc-game',
+            'image' => 'dcc',
+        ],
+        [
+            'tag' => 'Podcast',
+            'title' => 'Crawlers in Waiting',
+            'body' => 'A fan-made book club podcast discussing the Dungeon Crawler Carl series chapter by chapter, for fans who want to dig into the books together.',
+            'url' => 'https://crawlersinwaiting.com/',
+            'github' => 'https://github.com/joshespi/crawlers-in-waiting',
+            'image' => 'crawlers',
+        ],
+        [
+            'tag' => 'Web App',
+            'title' => 'Soundboard',
+            'body' => 'Build your own soundboards from your uploaded audio clips, then play them from a big-button touch grid. Made for my son so he doesn\'t need to download sketchy soundboard apps.',
+            'url' => 'https://soundboard.joshespi.com/',
+            'github' => 'https://github.com/joshespi/soundboard',
+            'image' => 'soundboard',
+        ],
+        [
+            'tag' => 'Family Site',
+            'title' => 'Espi Family',
+            'body' => 'A personal site for my family — a hub for our creative projects and a home base for our YouTube channel.',
+            'url' => 'https://espifam.com/',
+            'github' => 'https://github.com/joshespi/espifam-site',
+            'image' => 'espifam',
+        ],
+        [
+            'tag' => 'Web App',
+            'title' => "Espi's Tools",
+            'body' => 'A small collection of randomization utilities — weighted picker, passphrase generator, tip calculator, dice roller, coin flip, and a meme builder.',
+            'url' => 'https://tools.joshespi.com/',
+            'github' => 'https://github.com/joshespi/random-tools',
+            'image' => 'tools',
+        ],
+    ];
+@endphp
+
 <section class="bg-ink text-white py-20 px-6">
     <div class="max-w-4xl mx-auto">
-        <p class="font-mono text-brand text-sm tracking-widest uppercase mb-4">My Work</p>
+        <p class="font-mono text-brand text-sm tracking-widest uppercase mb-4 text-center">My Work</p>
         <h1 class="text-4xl md:text-5xl font-black leading-tight mb-6 text-center">
             Things I've built and shipped.
         </h1>
@@ -20,66 +83,10 @@
 <section class="py-20 px-6 bg-canvas">
     <div class="max-w-6xl mx-auto grid md:grid-cols-2 lg:grid-cols-3 gap-5">
 
-        @foreach([
-            [
-                'tag' => 'Web App',
-                'title' => 'TV Tracker',
-                'body' => 'A free, ad-free way to track what you\'re watching. Search and follow any show, mark episodes and whole seasons watched, and get an email when something new airs.',
-                'url' => 'https://tvtime.joshespi.com/',
-                'github' => 'https://github.com/joshespi/tvtime',
-                'image' => 'tvtime',
-            ],
-            [
-                'tag' => 'Web App',
-                'title' => 'Complete Finance Tracker',
-                'body' => 'A free personal finance app that combines investment portfolio tracking (stocks, crypto, real estate) with envelope budgeting for everyday cash. Hosted for you at no cost — no subscriptions, no selling your data — or self-host it yourself if you\'d rather.',
-                'url' => 'https://finance.espifam.com/',
-                'github' => 'https://github.com/joshespi/personal-finance-tracker',
-                'image' => 'finance',
-            ],
-            [
-                'tag' => 'Game',
-                'title' => 'Dungeon Crawler Carl — Fan Game',
-                'body' => 'A browser-based dungeon crawler built for fun, inspired by the Dungeon Crawler Carl book series. All assets are generated at runtime — no image files required.',
-                'url' => 'https://dcc.joshespi.com/',
-                'github' => 'https://github.com/joshespi/dcc-game',
-                'image' => 'dcc',
-            ],
-            [
-                'tag' => 'Podcast',
-                'title' => 'Crawlers in Waiting',
-                'body' => 'A fan-made book club podcast discussing the Dungeon Crawler Carl series chapter by chapter, for fans who want to dig into the books together.',
-                'url' => 'https://crawlersinwaiting.com/',
-                'github' => 'https://github.com/joshespi/crawlers-in-waiting',
-                'image' => 'crawlers',
-            ],
-            [
-                'tag' => 'Web App',
-                'title' => 'Soundboard',
-                'body' => 'Build your own soundboards from your uploaded audio clips, then play them from a big-button touch grid. Made for my son so he doesn\'t need to download sketchy soundboard apps.',
-                'url' => 'https://soundboard.joshespi.com/',
-                'github' => 'https://github.com/joshespi/soundboard',
-                'image' => 'soundboard',
-            ],
-            [
-                'tag' => 'Family Site',
-                'title' => 'Espi Family',
-                'body' => 'A personal site for my family — a hub for our creative projects and a home base for our YouTube channel.',
-                'url' => 'https://espifam.com/',
-                'github' => 'https://github.com/joshespi/espifam-site',
-                'image' => 'espifam',
-            ],
-            [
-                'tag' => 'Web App',
-                'title' => "Espi's Tools",
-                'body' => 'A small collection of randomization utilities — weighted picker, passphrase generator, tip calculator, dice roller, coin flip, and a meme builder.',
-                'url' => 'https://tools.joshespi.com/',
-                'github' => 'https://github.com/joshespi/random-tools',
-                'image' => 'tools',
-            ],
-        ] as $project)
+        @foreach($projects as $project)
         <div class="bg-surface rounded-lg border border-border flex flex-col overflow-hidden">
-            <img src="/images/work/{{ $project['image'] }}.webp" alt="Screenshot of {{ $project['title'] }}" loading="lazy"
+            <img src="/images/work/{{ $project['image'] }}.webp" alt="Screenshot of {{ $project['title'] }}"
+                 width="1000" height="625" loading="lazy" decoding="async"
                  class="w-full h-36 object-cover object-top border-b border-border">
             <div class="p-6 flex flex-col flex-1">
                 <p class="font-mono text-brand text-xs tracking-widest uppercase mb-2">{{ $project['tag'] }}</p>
@@ -118,5 +125,34 @@
         </a>
     </div>
 </section>
+
+
+@push('schema')
+@php
+    $listItems = [];
+    foreach ($projects as $i => $project) {
+        $listItems[] = [
+            '@type'    => 'ListItem',
+            'position' => $i + 1,
+            'item'     => [
+                '@type'       => 'CreativeWork',
+                'name'        => $project['title'],
+                'description' => $project['body'],
+                'url'         => $project['url'],
+                'image'       => url('/images/work/' . $project['image'] . '.webp'),
+                'author'      => ['@type' => 'Person', 'name' => 'Josh Espinoza'],
+            ],
+        ];
+    }
+
+    $workSchema = [
+        '@context'        => 'https://schema.org',
+        '@type'           => 'ItemList',
+        'name'            => 'Projects by Josh Espinoza',
+        'itemListElement' => $listItems,
+    ];
+@endphp
+<x-json-ld :data="$workSchema" />
+@endpush
 
 @endsection

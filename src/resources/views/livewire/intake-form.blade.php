@@ -17,6 +17,22 @@
     @else
         <form wire:submit="submit" class="space-y-6">
 
+            {{-- Whole-form problems: rate limiting, or a misconfigured inbox.
+                 These belong to no single field, so they get their own banner. --}}
+            @error('form')
+            <div role="alert" class="border border-red-300 bg-red-50 text-red-700 rounded px-4 py-3 text-sm">
+                {{ $message }}
+            </div>
+            @enderror
+
+            {{-- Honeypot. Off-screen rather than display:none, which some bots
+                 check for. Never autofilled: no autocomplete, not tabbable. --}}
+            <div aria-hidden="true" class="absolute w-px h-px -left-[9999px] overflow-hidden">
+                <label for="website">Leave this field empty</label>
+                <input wire:model="website" id="website" name="website" type="text"
+                       tabindex="-1" autocomplete="off">
+            </div>
+
             {{-- Name + Email --}}
             <div class="grid md:grid-cols-2 gap-6">
                 <div>
@@ -48,7 +64,7 @@
                         @endforeach
                     </optgroup>
                     @endforeach
-                    <option value="Not sure / other">Not sure / other</option>
+                    <option value="{{ IntakeForm::OTHER_SERVICE }}">{{ IntakeForm::OTHER_SERVICE }}</option>
                 </select>
                 <x-form-error field="service" />
             </div>
@@ -67,10 +83,10 @@
             {{-- WordPress conditional fields --}}
             @if($this->isWpService())
             <x-intake-fields-box>
-                <div>
-                    <p class="block text-sm font-semibold mb-2">Do you have WordPress admin access?</p>
+                <fieldset>
+                    <legend class="block text-sm font-semibold mb-2">Do you have WordPress admin access?</legend>
                     <div class="flex flex-wrap gap-4">
-                        @foreach(['Yes', 'Not yet', 'Need help getting it', 'No'] as $opt)
+                        @foreach(IntakeForm::WP_ADMIN_ACCESS as $opt)
                         <label class="flex items-center gap-2 text-sm cursor-pointer">
                             <input wire:model="wpAdminAccess" type="radio" value="{{ $opt }}" class="accent-brand">
                             {{ $opt }}
@@ -78,7 +94,7 @@
                         @endforeach
                     </div>
                     <x-form-error field="wpAdminAccess" />
-                </div>
+                </fieldset>
 
                 <div>
                     <label class="block text-sm font-semibold mb-1.5" for="hostingProvider">Hosting provider <span class="font-normal text-muted">(optional)</span></label>
@@ -103,10 +119,10 @@
             {{-- Custom Dev conditional fields --}}
             @if($this->isCustomDevService())
             <x-intake-fields-box>
-                <div>
-                    <p class="block text-sm font-semibold mb-2">Starting point</p>
+                <fieldset>
+                    <legend class="block text-sm font-semibold mb-2">Starting point</legend>
                     <div class="flex flex-wrap gap-4">
-                        @foreach(['Existing code to extend', 'Starting from scratch'] as $opt)
+                        @foreach(IntakeForm::STARTING_POINTS as $opt)
                         <label class="flex items-center gap-2 text-sm cursor-pointer">
                             <input wire:model="startingPoint" type="radio" value="{{ $opt }}" class="accent-brand">
                             {{ $opt }}
@@ -114,7 +130,7 @@
                         @endforeach
                     </div>
                     <x-form-error field="startingPoint" />
-                </div>
+                </fieldset>
 
                 @if($this->isApiIntegration())
                 <div>
@@ -139,7 +155,8 @@
             </x-intake-fields-box>
             @endif
 
-            {{-- Budget + Timeline --}}
+            {{-- Budget + Timeline. Options come from the component so the
+                 validator's allowlist and this markup cannot disagree. --}}
             @if($service)
             <div class="grid md:grid-cols-2 gap-6">
                 <div>
@@ -147,11 +164,9 @@
                     <select wire:model="budget" id="budget"
                             class="{{ $field }} @error('budget') border-red-400 @enderror">
                         <option value="">Select...</option>
-                        <option value="Under $500">Under $500</option>
-                        <option value="$500–$1,500">$500–$1,500</option>
-                        <option value="$1,500–$5,000">$1,500–$5,000</option>
-                        <option value="$5,000+">$5,000+</option>
-                        <option value="Not sure">Not sure</option>
+                        @foreach(IntakeForm::BUDGETS as $opt)
+                        <option value="{{ $opt }}">{{ $opt }}</option>
+                        @endforeach
                     </select>
                     <x-form-error field="budget" />
                 </div>
@@ -160,10 +175,9 @@
                     <select wire:model="timeline" id="timeline"
                             class="{{ $field }} @error('timeline') border-red-400 @enderror">
                         <option value="">Select...</option>
-                        <option value="ASAP">ASAP</option>
-                        <option value="Within 2 weeks">Within 2 weeks</option>
-                        <option value="Within a month">Within a month</option>
-                        <option value="Flexible">Flexible</option>
+                        @foreach(IntakeForm::TIMELINES as $opt)
+                        <option value="{{ $opt }}">{{ $opt }}</option>
+                        @endforeach
                     </select>
                     <x-form-error field="timeline" />
                 </div>
