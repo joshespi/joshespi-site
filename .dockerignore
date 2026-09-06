@@ -1,0 +1,9 @@
+# The image only needs src/package*.json and docker/entrypoint.sh; the app code
+# arrives via the bind mount. Keeping 140MB of installed deps out of the build
+# context is the difference between a fast build and a slow one.
+src/node_modules
+src/vendor
+src/public/build
+src/storage
+.git
+.env

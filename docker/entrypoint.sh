@@ -33,9 +33,30 @@ fi
 # public/build is gitignored and nothing else builds it, so a fresh clone used to
 # deploy with no Vite manifest and 500 on every page. This is why node is in the
 # image at all now that the separate node container is gone.
-if stale package-lock.json node || [ ! -f public/build/manifest.json ]; then
-    echo "[entrypoint] npm ci && npm run build"
+#
+# node_modules itself is baked into the image at /opt/node-deps (see Dockerfile)
+# and linked in here, so a normal boot installs nothing. Only a lockfile edited
+# since the image was built falls back to installing onto the mount.
+BAKED_HASH=$(cat /opt/node-deps/.lock-hash 2>/dev/null || true)
+LOCK_HASH=$(md5sum package-lock.json | cut -d' ' -f1)
+
+if [ "$LOCK_HASH" = "$BAKED_HASH" ]; then
+    if [ ! -e node_modules ]; then
+        echo "[entrypoint] linking node_modules from image"
+        ln -s /opt/node-deps/node_modules node_modules
+    fi
+elif stale package-lock.json node || [ ! -e node_modules ]; then
+    echo "[entrypoint] package-lock.json is newer than the image — npm ci"
+    # Unlink, never rm -rf: node_modules may be the symlink above, and npm
+    # would clear the image's own copy through it.
+    if [ -L node_modules ]; then
+        rm -f node_modules
+    fi
     npm ci --no-audit --no-fund
+fi
+
+if stale package-lock.json node || [ ! -f public/build/manifest.json ]; then
+    echo "[entrypoint] npm run build"
     npm run build
     mark package-lock.json node
 fi
