@@ -39,7 +39,7 @@ services:
     # defeats the realip chain in docker/nginx.conf and with it the intake form's
     # per-IP rate limit.
     ports:
-      - "127.0.0.1:8081:80"
+      - "${JOSHESPI_BIND_ADDR:-0.0.0.0}:8081:80"
     volumes:
       - ./src/public:/var/www/html/public:ro
       - ./docker/nginx.conf:/etc/nginx/conf.d/default.conf:ro
