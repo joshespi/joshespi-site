@@ -5,27 +5,9 @@
 
 @section('content')
 
-<section class="bg-ink text-white py-24 px-6">
-    <div class="max-w-3xl mx-auto text-center">
-        <p class="font-mono text-brand text-sm tracking-widest uppercase mb-6 text-center">Error 404</p>
-        <h1 class="text-4xl md:text-5xl font-black leading-tight mb-6">
-            That page doesn't exist.
-        </h1>
-        <p class="text-white/70 text-xl mb-10 max-w-xl mx-auto">
-            The link may be out of date, or the URL might have a typo. Here's where you probably meant to go.
-        </p>
-        <div class="flex flex-wrap gap-4 justify-center">
-            <a href="/services"
-               class="bg-brand hover:bg-brand-dark text-white font-semibold px-8 py-4 rounded text-lg transition-colors">
-                Services &amp; Pricing
-            </a>
-            <a href="/"
-               class="border border-white/30 hover:border-white text-white font-semibold px-8 py-4 rounded text-lg transition-colors">
-                Back Home
-            </a>
-        </div>
-    </div>
-</section>
+<x-error-hero code="404" heading="That page doesn't exist." primary-href="/services" primary-label="Services & Pricing">
+    The link may be out of date, or the URL might have a typo. Here's where you probably meant to go.
+</x-error-hero>
 
 <section class="py-20 px-6 bg-canvas">
     <div class="max-w-4xl mx-auto">

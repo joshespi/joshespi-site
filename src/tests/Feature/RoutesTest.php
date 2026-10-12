@@ -18,8 +18,16 @@ class RoutesTest extends TestCase
         // Status alone would still pass on Laravel's stock error page.
         $this->get('/does-not-exist')
             ->assertStatus(404)
-            ->assertSee('That page doesn\'t exist.', escape: false)
+            ->assertSee('That page doesn\'t exist.')
             ->assertSee('All pages', escape: false);
+    }
+
+    public function test_server_error_and_expired_pages_are_branded(): void
+    {
+        // Rendered directly: provoking a real 500 or 419 in a test means
+        // switching off the very handling that would show them.
+        $this->assertStringContainsString('Something broke on my end.', view('errors.500')->render());
+        $this->assertStringContainsString('This page expired.', view('errors.419')->render());
     }
 
     public function test_the_404_page_links_every_nav_page_except_home(): void
