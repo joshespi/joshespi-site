@@ -71,8 +71,8 @@ chmod -R 775 storage bootstrap/cache database 2>/dev/null \
     || echo "[entrypoint] chmod skipped — mount does not support modes"
 
 # sessions live in the database by default, so an unmigrated schema 500s every
-# Livewire request. Retry briefly: the DB is on the host and compose has no
-# readiness gate for it.
+# Livewire request. Retry briefly anyway: compose waits on joshespi_db's
+# healthcheck, but a DB_HOST pointed anywhere else gets no such gate.
 echo "[entrypoint] migrate"
 i=1
 until php artisan migrate --force --no-interaction; do

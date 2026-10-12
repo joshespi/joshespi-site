@@ -7,3 +7,7 @@ src/public/build
 src/storage
 .git
 .env
+
+# MariaDB data dir (bind mount). Owned by the container's mysql user, so it
+# can be unreadable to the build — and it never belongs in an image anyway.
+joshespi_db_data
