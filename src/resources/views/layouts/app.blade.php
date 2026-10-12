@@ -43,7 +43,8 @@
     <meta name="twitter:description" content="{{ $pageDescription }}">
     <meta name="twitter:image" content="{{ url('/og.png') }}">
 
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    {{-- CSS only: Livewire injects Alpine and its own runtime. --}}
+    @vite('resources/css/app.css')
     @livewireStyles
 
     @include('partials.schema')
