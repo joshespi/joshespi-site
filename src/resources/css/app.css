@@ -1,10 +1,10 @@
 @import '@fontsource-variable/inter';
 @import 'tailwindcss';
 
-@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../vendor/livewire/livewire/src/Features/SupportPagination/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
 @source '../**/*.blade.php';
-@source '../**/*.js';
+@source '../../app/**/*.php';
 
 /*
     Alpine strips x-cloak once it boots. Without this rule the mobile nav and
@@ -26,4 +26,16 @@
     --color-surface:    #E8EAED;
     --color-canvas:     #F0F2F5;
     --color-border:     #D1D5DB;
+}
+
+/*
+    Text inputs, selects and textareas. The error border keys off
+    aria-invalid, which @invalid sets, so no view has to restate it.
+*/
+@utility field {
+    @apply w-full border border-border rounded bg-white px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent;
+
+    &[aria-invalid="true"] {
+        @apply border-red-400;
+    }
 }
