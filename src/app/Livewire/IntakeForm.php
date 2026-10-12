@@ -2,12 +2,11 @@
 
 namespace App\Livewire;
 
-use App\Mail\IntakeConfirmation;
-use App\Mail\IntakeNotification;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Mail;
+use App\Enums\IntakeEmail;
+use App\Models\Intake;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 use Livewire\Component;
 
 class IntakeForm extends Component
@@ -147,16 +146,6 @@ class IntakeForm extends Component
             return;
         }
 
-        // Checked before the rate limiter is touched: an operator's missing env
-        // var must not burn the visitor's five attempts.
-        $to = config('mail.intake_notify_address');
-        if (empty($to)) {
-            Log::error('INTAKE_NOTIFY_ADDRESS is not configured — intake submission dropped.');
-            $this->addError('form', 'The form is temporarily unavailable. Please try again later.');
-
-            return;
-        }
-
         $key = 'intake:' . request()->ip();
         if (RateLimiter::tooManyAttempts($key, 5)) {
             $this->addError('form', 'Too many submissions — please wait a few minutes before trying again.');
@@ -166,35 +155,36 @@ class IntakeForm extends Component
 
         // Validate first — a failed validation is a typo, not a submission,
         // and should not burn one of the five attempts.
-        $this->validate($this->validationRules());
+        try {
+            $this->validate($this->validationRules());
+        } catch (ValidationException $e) {
+            // The view moves focus to the first invalid field on this event.
+            $this->dispatch('intake-invalid');
+
+            throw $e;
+        }
 
         RateLimiter::hit($key, 300);
 
-        $details = $this->extraDetails();
+        // Saved before anything is emailed: the row is the lead. The mail goes
+        // out after the response, so the visitor never waits on SMTP, and a
+        // failure is only recorded on the row for the admin page or
+        // intake:resend to retry. A dead relay never costs a submission.
+        $intake = Intake::create([
+            'name'     => $this->name,
+            'email'    => $this->email,
+            'url'      => $this->url ?: null,
+            'service'  => $this->service,
+            'budget'   => $this->budget,
+            'timeline' => $this->timeline,
+            'message'  => $this->message,
+            'details'  => $this->extraDetails() ?: null,
+        ]);
 
-        Mail::to($to)->send(new IntakeNotification(
-            name: $this->name,
-            email: $this->email,
-            service: $this->service,
-            body: $this->message,
-            details: $details,
-        ));
-
-        // Client receipt. Never let a bad recipient address cost us the
-        // submission — the notification above is the one that matters.
-        try {
-            Mail::to($this->email)->send(new IntakeConfirmation(
-                name: $this->name,
-                service: $this->service,
-                body: $this->message,
-                details: $details,
-            ));
-        } catch (\Throwable $e) {
-            Log::warning('Intake confirmation email failed', [
-                'email' => $this->email,
-                'error' => $e->getMessage(),
-            ]);
-        }
+        defer(function () use ($intake) {
+            $intake->deliver(IntakeEmail::Notification);
+            $intake->deliver(IntakeEmail::Confirmation);
+        });
 
         $this->submitted = true;
     }
@@ -227,13 +217,10 @@ class IntakeForm extends Component
         return $rules;
     }
 
+    /** The service-specific answers, labelled for display. */
     private function extraDetails(): array
     {
         $details = [];
-
-        if ($this->url) {
-            $details['Site URL'] = $this->url;
-        }
 
         if ($this->isWpService()) {
             $details['WP admin access'] = $this->wpAdminAccess;
@@ -256,9 +243,6 @@ class IntakeForm extends Component
         if ($this->isDevOpsService() && $this->stackLanguage) {
             $details['Stack / language'] = $this->stackLanguage;
         }
-
-        $details['Budget']   = $this->budget;
-        $details['Timeline'] = $this->timeline;
 
         return $details;
     }

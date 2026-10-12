@@ -1,14 +1,20 @@
-<x-mail.layout heading="New intake: {{ $service }}">
+<x-mail.layout heading="New intake #{{ $intake->id }}: {{ $intake->service }}">
 
     {{-- Reply-To is the sender, so the address here is reference, not a link. --}}
-    <x-mail.details-table :rows="array_merge([
-        'Name'    => $name,
-        'Email'   => $email,
-        'Service' => $service,
-    ], $details)" />
+    <x-mail.details-table :rows="[
+        'Name'     => $intake->name,
+        'Email'    => $intake->email,
+        'Service'  => $intake->service,
+        'Budget'   => $intake->budget,
+        'Timeline' => $intake->timeline,
+    ]" />
 
-    <h3 style="margin-bottom: 8px;">Project details</h3>
-    <p style="background: #f8f9fa; padding: 16px; border-radius: 4px; white-space: pre-wrap; margin: 0;">{{ $body }}</p>
+    <p style="margin: 0;">
+        <a href="{{ route('admin.intakes.show', $intake) }}"
+           style="display: inline-block; background: #B52929; color: #fff; text-decoration: none; font-weight: bold; padding: 12px 20px; border-radius: 4px;">
+            Read the full intake &rarr;
+        </a>
+    </p>
 
     <x-slot:footer>
         <p style="color: #888; font-size: 13px; margin: 0;">Sent from joshespi.com intake form. Reply-To is set to the sender's email.</p>

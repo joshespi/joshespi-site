@@ -24,7 +24,7 @@
 
             <div>
                 <h2 class="text-xl font-bold text-ink mb-3">Data retention</h2>
-                <p>Intake submissions are retained in email only for as long as needed to complete the engagement or determine that no engagement will proceed. I do not maintain a marketing list and will not contact you unless you initiated the conversation.</p>
+                <p>Intake submissions are stored in a database on my own server, along with my working notes about the project, for as long as needed to complete the engagement or determine that no engagement will proceed. Email notifications about a submission are kept for the same period. I do not maintain a marketing list and will not contact you unless you initiated the conversation.</p>
             </div>
 
             <div>

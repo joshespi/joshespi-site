@@ -5,6 +5,9 @@ namespace Tests\Feature;
 use App\Livewire\IntakeForm;
 use App\Mail\IntakeConfirmation;
 use App\Mail\IntakeNotification;
+use App\Models\Intake;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Defer\DeferredCallbackCollection;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\RateLimiter;
 use Livewire\Livewire;
@@ -12,6 +15,8 @@ use Tests\TestCase;
 
 class IntakeFormTest extends TestCase
 {
+    use RefreshDatabase;
+
     // Uses "Not sure / other" so no conditional fields are required
     private array $baseData = [
         'name'     => 'Jane Client',
@@ -30,9 +35,12 @@ class IntakeFormTest extends TestCase
         // anything the day the test client reports a different address.
         RateLimiter::clear('intake:' . request()->ip());
 
-        // submit() refuses to do anything without this, so every test needs it.
-        // The tests that care about it missing override it themselves.
+        // Tests about a missing notify address override this themselves.
         config(['mail.intake_notify_address' => 'notify@example.com']);
+
+        // Emails go out after the response; run them inline so tests can
+        // assert on them. The one test about the deferral turns this back off.
+        $this->withoutDefer();
     }
 
     /** A filled-in form. Pass overrides for the field under test. */
@@ -67,6 +75,95 @@ class IntakeFormTest extends TestCase
             ->assertSet('submitted', true);
 
         Mail::assertSent(IntakeConfirmation::class, fn ($mail) => $mail->hasTo('jane@example.com'));
+    }
+
+    public function test_valid_submit_stores_the_intake_and_records_both_emails(): void
+    {
+        Mail::fake();
+
+        $this->form(['url' => 'https://example.com'])->call('submit');
+
+        $intake = Intake::sole();
+        $this->assertSame('Jane Client', $intake->name);
+        $this->assertSame('https://example.com', $intake->url);
+        $this->assertSame($this->baseData['message'], $intake->message);
+        $this->assertSame('$500–$1,500', $intake->budget);
+        $this->assertNotNull($intake->notification_sent_at);
+        $this->assertNotNull($intake->confirmation_sent_at);
+    }
+
+    public function test_emails_wait_until_after_the_response(): void
+    {
+        Mail::fake();
+        $this->withDefer();
+
+        $this->form()->call('submit')->assertSet('submitted', true);
+
+        // The lead is saved before the visitor's request finishes...
+        $this->assertDatabaseCount('intakes', 1);
+        Mail::assertNothingSent();
+
+        // ...and the mail goes out once the response is on its way.
+        app(DeferredCallbackCollection::class)->invoke();
+
+        Mail::assertSent(IntakeNotification::class, 1);
+        Mail::assertSent(IntakeConfirmation::class, 1);
+    }
+
+    public function test_service_specific_answers_are_stored_as_details(): void
+    {
+        Mail::fake();
+
+        $this->form([
+            'service'         => 'Site Migration ($249)',
+            'wpAdminAccess'   => 'Yes',
+            'hostingProvider' => 'SiteGround',
+            'currentHost'     => 'GoDaddy',
+            'stackLanguage'   => 'ignored: not a DevOps service',
+        ])->call('submit')->assertHasNoErrors();
+
+        $this->assertSame([
+            'WP admin access'  => 'Yes',
+            'Hosting provider' => 'SiteGround',
+            'Current host'     => 'GoDaddy',
+        ], Intake::sole()->details);
+    }
+
+    public function test_a_dead_mail_relay_still_saves_the_intake_and_thanks_the_visitor(): void
+    {
+        // A real transport pointed at a closed port: the same exception a
+        // lapsed Brevo key or an SMTP outage produces.
+        config([
+            'mail.mailers.broken' => ['transport' => 'smtp', 'host' => '127.0.0.1', 'port' => 1, 'timeout' => 1],
+            'mail.default'        => 'broken',
+        ]);
+
+        $this->form()
+            ->call('submit')
+            ->assertHasNoErrors()
+            ->assertSet('submitted', true);
+
+        $intake = Intake::sole();
+        $this->assertNull($intake->notification_sent_at);
+        $this->assertNotEmpty($intake->notification_error);
+        $this->assertNull($intake->confirmation_sent_at);
+        $this->assertNotEmpty($intake->confirmation_error);
+    }
+
+    public function test_failed_validation_asks_the_view_to_focus_the_first_error(): void
+    {
+        $this->form(['name' => ''])
+            ->call('submit')
+            ->assertDispatched('intake-invalid');
+    }
+
+    public function test_an_invalid_field_points_at_its_error_message(): void
+    {
+        $this->form(['name' => ''])
+            ->call('submit')
+            ->assertSeeHtml('aria-invalid="true" aria-describedby="name-error"')
+            ->assertSeeHtml('id="name-error"')
+            ->assertDontSeeHtml('aria-describedby="email-error"');
     }
 
     public function test_wp_service_requires_admin_access_answer(): void
@@ -187,6 +284,7 @@ class IntakeFormTest extends TestCase
             ->assertSet('submitted', true);
 
         Mail::assertNothingSent();
+        $this->assertDatabaseCount('intakes', 0);
     }
 
     public function test_rate_limit_blocks_after_five_attempts(): void
@@ -204,39 +302,25 @@ class IntakeFormTest extends TestCase
         Mail::assertSent(IntakeNotification::class, 5);
     }
 
-    public function test_empty_notify_address_does_not_complete_submission(): void
+    public function test_missing_notify_address_still_saves_the_intake_and_records_why(): void
     {
+        // The lead is in the database either way; the operator's missing env
+        // var shows up as a failed notification to fix and resend.
         Mail::fake();
         config(['mail.intake_notify_address' => '']);
 
         $this->form()
             ->call('submit')
-            ->assertHasErrors('form')
-            ->assertSet('submitted', false);
-
-        Mail::assertNotSent(IntakeNotification::class);
-    }
-
-    public function test_missing_notify_address_does_not_consume_rate_limit_attempts(): void
-    {
-        Mail::fake();
-        config(['mail.intake_notify_address' => '']);
-
-        $component = $this->form();
-
-        // Six blocked attempts against a misconfigured inbox. The operator's
-        // mistake must not spend the visitor's five tries.
-        for ($i = 0; $i < 6; $i++) {
-            $component->call('submit')->assertSet('submitted', false);
-        }
-
-        config(['mail.intake_notify_address' => 'notify@example.com']);
-
-        $component->call('submit')
             ->assertHasNoErrors()
             ->assertSet('submitted', true);
 
-        Mail::assertSent(IntakeNotification::class, 1);
+        Mail::assertNotSent(IntakeNotification::class);
+        Mail::assertSent(IntakeConfirmation::class);
+
+        $intake = Intake::sole();
+        $this->assertNull($intake->notification_sent_at);
+        $this->assertStringContainsString('INTAKE_NOTIFY_ADDRESS', $intake->notification_error);
+        $this->assertNotNull($intake->confirmation_sent_at);
     }
 
     public function test_failed_validation_does_not_consume_rate_limit_attempts(): void

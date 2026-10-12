@@ -22,6 +22,11 @@ return Application::configure(basePath: dirname(__DIR__))
             '172.16.0.0/12',
             '192.168.0.0/16',
         ]);
+
+        // The only login on this site is the admin's, so send guests there
+        // rather than to a route named "login" that doesn't exist.
+        $middleware->redirectGuestsTo(fn () => route('admin.login'));
+        $middleware->redirectUsersTo(fn () => route('admin.intakes.index'));
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

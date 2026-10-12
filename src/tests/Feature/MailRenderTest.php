@@ -4,74 +4,66 @@ namespace Tests\Feature;
 
 use App\Mail\IntakeConfirmation;
 use App\Mail\IntakeNotification;
+use App\Models\Intake;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class MailRenderTest extends TestCase
 {
-    private array $details = [
-        'Site URL' => 'https://example.com',
-        'Budget'   => '$500–$1,500',
-        'Timeline' => 'Flexible',
-    ];
+    use RefreshDatabase;
 
-    public function test_notification_renders_with_all_details(): void
+    public function test_notification_is_a_summary_that_links_to_the_admin(): void
     {
-        $html = (new IntakeNotification(
-            name: 'Jane Client',
-            email: 'jane@example.com',
-            service: 'Speed Optimization ($349)',
-            body: 'The site is slow.',
-            details: $this->details,
-        ))->render();
+        $intake = Intake::factory()->create([
+            'name'     => 'Jane Client',
+            'email'    => 'jane@example.com',
+            'service'  => 'Speed Optimization ($349)',
+            'timeline' => 'Flexible',
+            'message'  => 'The site is slow.',
+        ]);
 
-        $this->assertStringContainsString('New intake: Speed Optimization', $html);
+        $html = (new IntakeNotification($intake))->render();
+
+        $this->assertStringContainsString("New intake #{$intake->id}: Speed Optimization", $html);
         $this->assertStringContainsString('jane@example.com', $html);
         $this->assertStringContainsString('Flexible', $html);
-        $this->assertStringContainsString('The site is slow.', $html);
+        $this->assertStringContainsString(route('admin.intakes.show', $intake), $html);
+        // The message is read in the admin, not in the inbox.
+        $this->assertStringNotContainsString('The site is slow.', $html);
     }
 
-    public function test_confirmation_renders_with_all_details(): void
+    public function test_confirmation_carries_no_free_text_from_the_submission(): void
     {
-        $html = (new IntakeConfirmation(
-            name: 'Jane Client',
-            service: 'Speed Optimization ($349)',
-            body: 'The site is slow.',
-            details: $this->details,
-        ))->render();
+        // It goes to whatever address was typed in. Anything echoed here is
+        // a stranger's words sent from this domain.
+        $intake = Intake::factory()->create([
+            'name'     => 'NAME-MARKER',
+            'url'      => 'https://url-marker.example',
+            'service'  => 'Speed Optimization ($349)',
+            'timeline' => 'Flexible',
+            'message'  => 'BODY-MARKER visit my spam site',
+            'details'  => ['Hosting provider' => 'DETAIL-MARKER'],
+        ]);
 
-        $this->assertStringContainsString('Thanks, Jane Client', $html);
+        $html = (new IntakeConfirmation($intake))->render();
+
+        $this->assertStringContainsString('Speed Optimization', $html);
         $this->assertStringContainsString('Flexible', $html);
-        $this->assertStringContainsString('The site is slow.', $html);
-    }
-
-    public function test_confirmation_values_are_escaped_not_injected(): void
-    {
-        $html = (new IntakeConfirmation(
-            name: '<script>alert(1)</script>',
-            service: 'Not sure / other',
-            body: 'plain',
-            details: ['Budget' => '<img src=x onerror=alert(1)>'],
-        ))->render();
-
-        $this->assertStringNotContainsString('<script>alert(1)</script>', $html);
-        $this->assertStringNotContainsString('<img src=x', $html);
+        foreach (['NAME-MARKER', 'url-marker', 'BODY-MARKER', 'DETAIL-MARKER'] as $marker) {
+            $this->assertStringNotContainsString($marker, $html);
+        }
     }
 
     public function test_notification_values_are_escaped_not_injected(): void
     {
-        // This one renders everything the confirmation does plus the submitted
-        // email address, and it is the message that lands in my inbox.
-        $html = (new IntakeNotification(
-            name: '<script>alert(1)</script>',
-            email: 'jane@example.com',
-            service: 'Not sure / other',
-            body: '<b>bold</b> and <script>alert(2)</script>',
-            details: ['Budget' => '<img src=x onerror=alert(1)>'],
-        ))->render();
+        $intake = Intake::factory()->create([
+            'name'   => '<script>alert(1)</script>',
+            'budget' => '<img src=x onerror=alert(1)>',
+        ]);
+
+        $html = (new IntakeNotification($intake))->render();
 
         $this->assertStringNotContainsString('<script>alert(1)</script>', $html);
-        $this->assertStringNotContainsString('<script>alert(2)</script>', $html);
         $this->assertStringNotContainsString('<img src=x', $html);
-        $this->assertStringNotContainsString('<b>bold</b>', $html);
     }
 }
