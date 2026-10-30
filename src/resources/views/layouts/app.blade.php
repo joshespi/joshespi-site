@@ -25,9 +25,12 @@
     <title>{{ $pageTitle }}</title>
     <link rel="canonical" href="{{ $canonical }}">
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    {{-- Matches --color-ink in resources/css/app.css (the header background). --}}
+    <meta name="theme-color" content="#111111">
 
     {{-- Open Graph --}}
     <meta property="og:type" content="website">
+    <meta property="og:locale" content="en_US">
     <meta property="og:site_name" content="Josh Espinoza">
     <meta property="og:title" content="{{ $pageTitle }}">
     <meta property="og:description" content="{{ $pageDescription }}">
@@ -68,7 +71,7 @@
                     @php $active = $isActive($page['path']); @endphp
                     <a href="{{ $page['path'] }}"
                        @if($active) aria-current="page" @endif
-                       class="transition-colors {{ $active ? 'text-white border-b-2 border-brand pb-0.5' : 'hover:text-white' }}">
+                       class="transition-colors {{ $active ? 'text-white border-b-2 border-brand pb-0.5' : 'hover:text-white hover:underline underline-offset-4 decoration-white/40' }}">
                         {{ $page['label'] }}
                     </a>
                 @endforeach
@@ -114,12 +117,12 @@
         @yield('content')
     </main>
 
-    <footer class="bg-ink text-white/60 mt-24">
+    <footer class="bg-ink text-white/70 mt-24">
         <div class="max-w-6xl mx-auto px-6 py-12 flex flex-col md:flex-row items-center justify-between gap-6 text-sm">
             <p>&copy; {{ date('Y') }} Josh Espinoza. All rights reserved.</p>
             <nav aria-label="Footer" class="flex flex-wrap justify-center gap-x-6 gap-y-2">
                 @foreach($footerLinks as $page)
-                    <a href="{{ $page['path'] }}" class="hover:text-white transition-colors">{{ $page['label'] }}</a>
+                    <a href="{{ $page['path'] }}" class="hover:text-white hover:underline underline-offset-4 decoration-white/40 transition-colors">{{ $page['label'] }}</a>
                 @endforeach
             </nav>
         </div>

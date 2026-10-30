@@ -15,6 +15,36 @@
     display: none !important;
 }
 
+/*
+    Honour the OS-level reduced-motion setting. scroll-smooth lives on <html>
+    and x-collapse animates the mobile nav with inline transitions, so both
+    need overriding here; !important is what beats the inline styles.
+*/
+@media (prefers-reduced-motion: reduce) {
+    html {
+        scroll-behavior: auto !important;
+    }
+
+    #mobile-nav {
+        transition: none !important;
+    }
+}
+
+/*
+    Keyboard focus ring for every link, button and control. Brand red is
+    nearly invisible on the dark header and CTA bands, so the ring is white
+    there and falls back to brand red on light surfaces.
+*/
+:focus-visible {
+    outline: 2px solid var(--color-brand);
+    outline-offset: 2px;
+}
+
+.bg-ink :focus-visible,
+.bg-brand :focus-visible {
+    outline-color: #ffffff;
+}
+
 @theme {
     --font-sans: 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
     --font-mono: ui-monospace, 'Cascadia Code', 'Fira Code', monospace;
