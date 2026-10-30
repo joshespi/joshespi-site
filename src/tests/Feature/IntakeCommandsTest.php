@@ -140,6 +140,13 @@ class IntakeCommandsTest extends TestCase
         Mail::assertNothingSent();
     }
 
+    public function test_mail_test_is_scheduled_weekly(): void
+    {
+        $this->artisan('schedule:list')
+            ->expectsOutputToContain('mail:test')
+            ->assertSuccessful();
+    }
+
     public function test_admin_user_creates_then_resets_an_account(): void
     {
         $this->artisan('admin:user', ['email' => 'me@example.com'])

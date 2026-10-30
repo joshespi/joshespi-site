@@ -35,6 +35,29 @@ services:
     networks:
       - joshespi_net
 
+  # Runs routes/console.php's schedule. The app container only runs php-fpm, so
+  # nothing else fires scheduled commands. Same image and mount, but the
+  # entrypoint is skipped: the app container owns composer, the build and the
+  # migrations, and a second copy racing it on the shared mount would corrupt
+  # them. www-data, so files it creates under storage/ stay writable by fpm.
+  joshespi_scheduler:
+    build: .
+    container_name: joshespi_scheduler
+    restart: unless-stopped
+    user: www-data
+    entrypoint: []
+    command: ["php", "artisan", "schedule:work"]
+    env_file: .env
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - ./src:/var/www/html
+    depends_on:
+      joshespi_app:
+        condition: service_healthy
+    networks:
+      - joshespi_net
+
   # Production database. Opt-in through COMPOSE_PROFILES=mariadb in .env, so a
   # dev checkout on SQLite doesn't need DB passwords just to boot. The
   # container name and the "joshespi" database are what scripts/backup.sh and
