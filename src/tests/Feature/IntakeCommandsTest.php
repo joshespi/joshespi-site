@@ -4,11 +4,13 @@ namespace Tests\Feature;
 
 use App\Mail\IntakeConfirmation;
 use App\Mail\IntakeNotification;
+use App\Mail\TestMessage;
 use App\Models\Intake;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
+use RuntimeException;
 use Tests\TestCase;
 
 class IntakeCommandsTest extends TestCase
@@ -91,6 +93,51 @@ class IntakeCommandsTest extends TestCase
             ->expectsOutputToContain('Bounced Person')
             ->doesntExpectOutputToContain('Fine Person')
             ->assertSuccessful();
+    }
+
+    public function test_mail_test_sends_to_the_given_address(): void
+    {
+        $this->artisan('mail:test', ['to' => 'me@example.com'])
+            ->expectsOutputToContain('Sent.')
+            ->assertSuccessful();
+
+        Mail::assertSent(TestMessage::class, fn ($mail) => $mail->hasTo('me@example.com'));
+    }
+
+    public function test_mail_test_falls_back_to_the_notify_address(): void
+    {
+        $this->artisan('mail:test')->assertSuccessful();
+
+        Mail::assertSent(TestMessage::class, fn ($mail) => $mail->hasTo('notify@example.com'));
+    }
+
+    public function test_mail_test_says_when_the_log_mailer_did_not_deliver(): void
+    {
+        config(['mail.default' => 'log']);
+
+        $this->artisan('mail:test')
+            ->expectsOutputToContain('not delivered')
+            ->assertSuccessful();
+    }
+
+    public function test_mail_test_reports_a_send_failure_and_its_cause(): void
+    {
+        Mail::shouldReceive('to->send')
+            ->andThrow(new RuntimeException('Send failed', 0, new RuntimeException('Connection refused')));
+
+        $this->artisan('mail:test', ['to' => 'me@example.com'])
+            ->expectsOutputToContain('Send failed')
+            ->expectsOutputToContain('Connection refused')
+            ->assertFailed();
+    }
+
+    public function test_mail_test_needs_a_recipient(): void
+    {
+        config(['mail.intake_notify_address' => '']);
+
+        $this->artisan('mail:test')->assertExitCode(2);
+
+        Mail::assertNothingSent();
     }
 
     public function test_admin_user_creates_then_resets_an_account(): void
