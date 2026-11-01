@@ -65,6 +65,12 @@
             'github' => 'https://github.com/joshespi/random-tools',
             'image' => 'tools',
         ],
+        [
+            'tag' => 'Web App',
+            'title' => 'WoW Flip Ledger',
+            'body' => 'A ledger for World of Warcraft auction house traders. Upload your TradeSkillMaster data to see weighted-average cost, realized and unrealized profit after the AH cut, and live commodity prices next to what you paid.',
+            'url' => 'https://wowledger.joshespi.com/',
+        ],
     ];
 @endphp
 
@@ -85,9 +91,11 @@
 
         @foreach($projects as $project)
         <div class="bg-surface rounded-lg border border-border flex flex-col overflow-hidden">
+            @isset($project['image'])
             <img src="/images/work/{{ $project['image'] }}.webp" alt="Screenshot of {{ $project['title'] }}"
                  width="1000" height="625" loading="lazy" decoding="async"
                  class="w-full h-36 object-cover object-top border-b border-border">
+            @endisset
             <div class="p-6 flex flex-col flex-1">
                 <p class="font-mono text-brand text-xs tracking-widest uppercase mb-2">{{ $project['tag'] }}</p>
                 <h3 class="text-lg font-bold mb-2">{{ $project['title'] }}</h3>
@@ -100,6 +108,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
                         </svg>
                     </a>
+                    @isset($project['github'])
                     <a href="{{ $project['github'] }}" target="_blank" rel="noopener noreferrer"
                        class="inline-flex items-center gap-2 font-mono text-sm text-muted hover:text-ink transition-colors">
                         <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -107,6 +116,7 @@
                         </svg>
                         GitHub
                     </a>
+                    @endisset
                 </div>
             </div>
         </div>
@@ -139,10 +149,12 @@
                 'name'        => $project['title'],
                 'description' => $project['body'],
                 'url'         => $project['url'],
-                'image'       => url('/images/work/' . $project['image'] . '.webp'),
                 'author'      => ['@type' => 'Person', 'name' => 'Josh Espinoza'],
             ],
         ];
+        if (isset($project['image'])) {
+            $listItems[$i]['item']['image'] = url('/images/work/' . $project['image'] . '.webp');
+        }
     }
 
     $workSchema = [
