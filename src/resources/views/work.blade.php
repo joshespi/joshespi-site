@@ -70,6 +70,7 @@
             'title' => 'WoW Flip Ledger',
             'body' => 'A ledger for World of Warcraft auction house traders. Upload your TradeSkillMaster data to see weighted-average cost, realized and unrealized profit after the AH cut, and live commodity prices next to what you paid.',
             'url' => 'https://wowledger.joshespi.com/',
+            'image' => 'wowledger',
         ],
     ];
 @endphp
