@@ -114,27 +114,18 @@ class Intake extends Model
      */
     public function deliver(IntakeEmail $email): bool
     {
-        try {
-            match ($email) {
+        // A client's receipt bouncing off a typo'd address is routine; my
+        // own notification failing means a lead I might not know about.
+        return $this->recordAttempt(
+            sentColumn: $email->sentAtColumn(),
+            errorColumn: $email->errorColumn(),
+            logLevel: $email === IntakeEmail::Notification ? 'error' : 'warning',
+            failureMessage: "{$email->value} email failed",
+            send: fn () => match ($email) {
                 IntakeEmail::Notification => Mail::to($this->notifyAddress())->send(new IntakeNotification($this)),
                 IntakeEmail::Confirmation => Mail::to($this->email)->send(new IntakeConfirmation($this)),
-            };
-        } catch (Throwable $e) {
-            // A client's receipt bouncing off a typo'd address is routine; my
-            // own notification failing means a lead I might not know about.
-            Log::log(
-                $email === IntakeEmail::Notification ? 'error' : 'warning',
-                "Intake #{$this->id}: {$email->value} email failed",
-                ['error' => $e->getMessage()],
-            );
-            $this->forceFill([$email->errorColumn() => Str::limit($e->getMessage(), 1000)])->save();
-
-            return false;
-        }
-
-        $this->forceFill([$email->sentAtColumn() => now(), $email->errorColumn() => null])->save();
-
-        return true;
+            },
+        );
     }
 
     public static function trackerConfigured(): bool
@@ -154,8 +145,12 @@ class Intake extends Model
             return false;
         }
 
-        try {
-            Http::withToken(config('services.tracker.token'))
+        return $this->recordAttempt(
+            sentColumn: 'tracker_sent_at',
+            errorColumn: 'tracker_error',
+            logLevel: 'warning',
+            failureMessage: 'tracker push failed',
+            send: fn () => Http::withToken(config('services.tracker.token'))
                 ->acceptJson()
                 ->connectTimeout(3)
                 ->timeout(5)
@@ -170,15 +165,27 @@ class Intake extends Model
                     'message'     => $this->message,
                     'details'     => $this->details ?: null,
                 ])
-                ->throw();
+                ->throw(),
+        );
+    }
+
+    private function recordAttempt(
+        string $sentColumn,
+        string $errorColumn,
+        string $logLevel,
+        string $failureMessage,
+        callable $send,
+    ): bool {
+        try {
+            $send();
         } catch (Throwable $e) {
-            Log::warning("Intake #{$this->id}: tracker push failed", ['error' => $e->getMessage()]);
-            $this->forceFill(['tracker_error' => Str::limit($e->getMessage(), 1000)])->save();
+            Log::log($logLevel, "Intake #{$this->id}: {$failureMessage}", ['error' => $e->getMessage()]);
+            $this->forceFill([$errorColumn => Str::limit($e->getMessage(), 1000)])->save();
 
             return false;
         }
 
-        $this->forceFill(['tracker_sent_at' => now(), 'tracker_error' => null])->save();
+        $this->forceFill([$sentColumn => now(), $errorColumn => null])->save();
 
         return true;
     }

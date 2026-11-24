@@ -3,9 +3,8 @@
 namespace App\Console\Commands;
 
 use App\Models\Intake;
-use Illuminate\Console\Command;
 
-class IntakePush extends Command
+class IntakePush extends RetryIntakes
 {
     protected $signature = 'intake:push
         {ids?* : Intake IDs. Omit to push every intake the tracker has not received}';
@@ -20,37 +19,17 @@ class IntakePush extends Command
             return self::FAILURE;
         }
 
-        $ids = $this->argument('ids');
         // Pushing again by id is safe: the tracker de-duplicates on the intake id.
-        $intakes = $ids
-            ? Intake::findMany($ids)
-            : Intake::untracked()->oldest('id')->get();
+        return $this->retryIntakes(
+            $this->argument('ids'),
+            Intake::untracked(),
+            static function (Intake $intake): iterable {
+                $pushed = $intake->pushToTracker();
 
-        if ($ids && $intakes->count() !== count(array_unique($ids))) {
-            $missing = array_diff($ids, $intakes->modelKeys());
-            $this->warn('No intake with ID: ' . implode(', ', $missing));
-        }
-
-        if ($intakes->isEmpty()) {
-            $this->info('Nothing to push.');
-
-            return self::SUCCESS;
-        }
-
-        $sent = $failed = 0;
-        foreach ($intakes as $intake) {
-            if ($intake->pushToTracker()) {
-                $sent++;
-                $this->line("  #{$intake->id}: <info>pushed</info>");
-            } else {
-                $failed++;
-                $this->line("  #{$intake->id}: <error>failed</error> — {$intake->tracker_error}");
-            }
-        }
-
-        $this->newLine();
-        $this->info("{$sent} pushed, {$failed} failed.");
-
-        return $failed ? self::FAILURE : self::SUCCESS;
+                return [["#{$intake->id}", $pushed, $intake->tracker_error]];
+            },
+            'pushed',
+            'Nothing to push.',
+        );
     }
 }

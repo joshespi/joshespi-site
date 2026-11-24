@@ -4,9 +4,8 @@ namespace App\Console\Commands;
 
 use App\Enums\IntakeEmail;
 use App\Models\Intake;
-use Illuminate\Console\Command;
 
-class IntakeResend extends Command
+class IntakeResend extends RetryIntakes
 {
     protected $signature = 'intake:resend
         {ids?* : Intake IDs. Omit to retry every intake with an email that never went out}
@@ -24,46 +23,27 @@ class IntakeResend extends Command
             return self::INVALID;
         }
 
-        $ids = $this->argument('ids');
-        $intakes = $ids
-            ? Intake::findMany($ids)
-            : Intake::undelivered()->oldest('id')->get();
-
-        if ($ids && $intakes->count() !== count(array_unique($ids))) {
-            $missing = array_diff($ids, $intakes->modelKeys());
-            $this->warn('No intake with ID: ' . implode(', ', $missing));
-        }
-
         $emails = $only ? [$only] : IntakeEmail::cases();
-        $sent = $failed = 0;
+        $force = $this->option('force');
+        $ids = $this->argument('ids');
 
-        foreach ($intakes as $intake) {
-            foreach ($emails as $email) {
-                if ($intake->wasSent($email) && ! $this->option('force')) {
-                    continue;
+        return $this->retryIntakes(
+            $ids,
+            Intake::undelivered(),
+            static function (Intake $intake) use ($emails, $force): iterable {
+                foreach ($emails as $email) {
+                    if ($intake->wasSent($email) && ! $force) {
+                        continue;
+                    }
+
+                    $sent = $intake->deliver($email);
+                    yield ["#{$intake->id} {$email->value}", $sent, $intake->emailError($email)];
                 }
-
-                if ($intake->deliver($email)) {
-                    $sent++;
-                    $this->line("  #{$intake->id} {$email->value}: <info>sent</info>");
-                } else {
-                    $failed++;
-                    $this->line("  #{$intake->id} {$email->value}: <error>failed</error> — {$intake->emailError($email)}");
-                }
-            }
-        }
-
-        if ($sent + $failed === 0) {
-            $this->info($ids
+            },
+            'sent',
+            $ids
                 ? 'Nothing to send — those already went out. Add --force to send them again.'
-                : 'Nothing to retry — every intake email has gone out.');
-
-            return self::SUCCESS;
-        }
-
-        $this->newLine();
-        $this->info("{$sent} sent, {$failed} failed.");
-
-        return $failed ? self::FAILURE : self::SUCCESS;
+                : 'Nothing to retry — every intake email has gone out.',
+        );
     }
 }
