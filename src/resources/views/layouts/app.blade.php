@@ -25,8 +25,8 @@
     <title>{{ $pageTitle }}</title>
     <link rel="canonical" href="{{ $canonical }}">
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
-    {{-- Matches --color-ink in resources/css/app.css (the header background). --}}
-    <meta name="theme-color" content="#111111">
+    {{-- Matches --color-ink in .studio in resources/css/app.css (the header background). --}}
+    <meta name="theme-color" content="#202321">
 
     {{-- Open Graph --}}
     <meta property="og:type" content="website">
@@ -53,7 +53,7 @@
     @include('partials.schema')
     @stack('schema')
 </head>
-<body class="bg-surface text-ink antialiased">
+<body class="studio bg-canvas text-ink antialiased">
 
     <a href="#main"
        class="sr-only focus:not-sr-only focus:absolute focus:top-3 focus:left-3 focus:z-[60] focus:bg-white focus:text-ink focus:font-semibold focus:px-4 focus:py-2 focus:rounded focus:ring-2 focus:ring-brand">
@@ -61,9 +61,9 @@
     </a>
 
     <header x-data="{ open: false }" class="bg-ink text-white sticky top-0 z-50 border-b border-white/10">
-        <div class="max-w-6xl mx-auto px-6 flex items-center justify-between h-16">
+        <div class="max-w-6xl mx-auto px-6 flex items-center justify-between h-18">
             <a href="/" class="flex items-center gap-3 shrink-0">
-                <img src="/logo-light.svg" alt="Josh Espinoza" width="160" height="32" class="h-8 w-auto">
+                <img src="/favicon.svg" width="36" height="36" alt=""> <span class="wordmark">Josh Espinoza</span>
             </a>
 
             <nav aria-label="Main" class="hidden md:flex items-center gap-8 text-sm font-medium text-white/80">
@@ -105,7 +105,7 @@
                     @php $active = $isActive($page['path']); @endphp
                     <a href="{{ $page['path'] }}"
                        @if($active) aria-current="page" @endif
-                       class="py-3 text-sm font-medium border-b border-white/5 last:border-0 transition-colors {{ $active ? 'text-brand' : 'text-white/80 hover:text-white' }}">
+                       class="py-3 text-sm font-medium border-b border-white/5 last:border-0 transition-colors {{ $active ? 'text-brand-light' : 'text-white/80 hover:text-white' }}">
                         {{ $page['label'] }}
                     </a>
                 @endforeach
@@ -117,7 +117,7 @@
         @yield('content')
     </main>
 
-    <footer class="bg-ink text-white/70 mt-24">
+    <footer class="bg-ink text-white/70 border-t border-white/15">
         <div class="max-w-6xl mx-auto px-6 py-12 flex flex-col md:flex-row items-center justify-between gap-6 text-sm">
             <p>&copy; {{ date('Y') }} Josh Espinoza. All rights reserved.</p>
             <nav aria-label="Footer" class="flex flex-wrap justify-center gap-x-6 gap-y-2">

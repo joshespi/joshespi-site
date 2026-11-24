@@ -33,23 +33,15 @@
 @endphp
 
 {{-- Hero --}}
-<section class="bg-ink text-white py-20 px-6">
-    <div class="max-w-4xl mx-auto">
-        <p class="font-mono text-brand text-sm tracking-widest uppercase mb-4 text-center">Services</p>
-        <h1 class="text-4xl md:text-5xl font-black leading-tight mb-6 text-center">
-            Fixed-price work. No calls required.
-        </h1>
-        <p class="text-white/70 text-xl max-w-2xl mx-auto text-center">
-            Pick a service below or fill the intake form. I'll respond with a written scope and price within 1 business day.
-        </p>
-    </div>
-</section>
+<x-page-masthead label="Services" heading="Fixed-price work. No calls required.">
+    Pick a service below or fill the intake form. I'll respond with a written scope and price within 1 business day.
+</x-page-masthead>
 
 {{-- How it works --}}
 <section class="py-16 px-6 bg-canvas border-b border-border">
-    <div class="max-w-4xl mx-auto">
+    <div class="studio-wrap">
         <p class="font-mono text-brand text-xs tracking-widest uppercase mb-3">Process</p>
-        <h2 class="text-2xl font-black mb-10">How it works</h2>
+        <h2 class="mb-10">How it works</h2>
         <div class="grid md:grid-cols-3 gap-10">
             @foreach([
                 ['01', 'Pick a service or fill the form', 'Browse the menu below or describe your project in the intake form at the bottom of this page.'],
@@ -70,9 +62,9 @@
 
 {{-- Tier 1: WordPress --}}
 <section class="py-16 px-6 bg-surface">
-    <div class="max-w-4xl mx-auto">
+    <div class="studio-wrap">
         <p class="font-mono text-brand text-xs tracking-widest uppercase mb-2">Tier 1</p>
-        <h2 class="text-2xl font-black mb-2">WordPress — Fixed Price</h2>
+        <h2 class="mb-2">WordPress — Fixed Price</h2>
         <p class="text-muted mb-8">Scoped, priced, and done. No hourly billing surprises.</p>
 
         <div class="overflow-x-auto">
@@ -110,9 +102,9 @@
 
 {{-- Tier 2: Custom Dev --}}
 <section class="py-16 px-6 bg-canvas">
-    <div class="max-w-4xl mx-auto">
+    <div class="studio-wrap">
         <p class="font-mono text-brand text-xs tracking-widest uppercase mb-2">Tier 2</p>
-        <h2 class="text-2xl font-black mb-2">Custom Development</h2>
+        <h2 class="mb-2">Custom Development</h2>
         <p class="text-muted mb-8">Quoted per project after intake form review.</p>
 
         <div class="overflow-x-auto">
@@ -143,9 +135,9 @@
 
 {{-- Tier 3: DevOps / Security --}}
 <section class="py-16 px-6 bg-surface">
-    <div class="max-w-4xl mx-auto">
+    <div class="studio-wrap">
         <p class="font-mono text-brand text-xs tracking-widest uppercase mb-2">Tier 3</p>
-        <h2 class="text-2xl font-black mb-2">DevOps &amp; Security</h2>
+        <h2 class="mb-2">DevOps &amp; Security</h2>
         <p class="text-muted mb-8">Server work, containers, pipelines, and security audits.</p>
 
         <div class="overflow-x-auto">
@@ -178,7 +170,7 @@
 <section class="py-16 px-6 bg-canvas">
     <div class="max-w-3xl mx-auto">
         <p class="font-mono text-brand text-xs tracking-widest uppercase mb-3">FAQ</p>
-        <h2 class="text-2xl font-black mb-10">Common questions</h2>
+        <h2 class="mb-10">Common questions</h2>
         <div class="space-y-8">
             @foreach($faqs as [$q, $a])
             <div class="border-b border-border pb-8">
@@ -193,8 +185,8 @@
 {{-- Intake form --}}
 <section id="intake" class="py-20 px-6 bg-ink text-white">
     <div class="max-w-3xl mx-auto">
-        <p class="font-mono text-brand text-sm tracking-widest uppercase mb-4">Get started</p>
-        <h2 class="text-3xl font-black mb-3">Send an intake form</h2>
+        <p class="font-mono text-brand-light text-sm tracking-widest uppercase mb-4">Get started</p>
+        <h2 class="mb-3">Send an intake form</h2>
         <p class="text-white/70 mb-10">Fill this out and I'll respond by email within 1 business day with a scope and price — or a follow-up question if I need more detail.</p>
         <div class="bg-white text-ink rounded-lg p-8">
             @livewire('intake-form')

@@ -5,24 +5,16 @@
 
 @section('content')
 
-<section class="bg-ink text-white py-20 px-6">
-    <div class="max-w-4xl mx-auto">
-        <p class="font-mono text-brand text-sm tracking-widest uppercase mb-4 text-center">About</p>
-        <h1 class="text-4xl md:text-5xl font-black leading-tight mb-6 text-center">
-            15 years building things that run.
-        </h1>
-        <p class="text-white/70 text-xl max-w-2xl mx-auto text-center">
-            Full Stack Software Engineer at Provo City School District. Started in 2011 as a Web Development Engineer, now leading teams and managing containerized production deployments.
-        </p>
-    </div>
-</section>
+<x-page-masthead label="About" heading="15 years building things that run.">
+    Full Stack Software Engineer at Provo City School District. Started in 2011 as a Web Development Engineer, now leading teams and managing containerized production deployments.
+</x-page-masthead>
 
 <section class="py-20 px-6 bg-canvas">
-    <div class="max-w-4xl mx-auto grid md:grid-cols-2 gap-16">
+    <div class="studio-wrap grid md:grid-cols-2 gap-16">
 
         <div>
             <p class="font-mono text-brand text-xs tracking-widest uppercase mb-4">Background</p>
-            <h2 class="text-2xl font-black mb-6">The work</h2>
+            <h2 class="text-2xl mb-6">The work</h2>
             <div class="space-y-4 text-muted leading-relaxed">
                 <p>
                     I've spent 15 years in web development — starting with WordPress and PHP, growing into Laravel, Docker, CI/CD pipelines, and server management on Linux/Ubuntu.
@@ -45,7 +37,7 @@
 
         <div>
             <p class="font-mono text-brand text-xs tracking-widest uppercase mb-4">Stack</p>
-            <h2 class="text-2xl font-black mb-6">What I work in</h2>
+            <h2 class="text-2xl mb-6">What I work in</h2>
             <div class="grid grid-cols-2 gap-3">
                 @foreach([
                     'PHP', 'Laravel', 'WordPress', 'MySQL / MariaDB',
@@ -63,9 +55,9 @@
 </section>
 
 <section class="py-20 px-6 bg-surface">
-    <div class="max-w-4xl mx-auto">
+    <div class="studio-wrap">
         <p class="font-mono text-brand text-xs tracking-widest uppercase mb-4">Why async</p>
-        <h2 class="text-2xl font-black mb-6">No calls required — and that's a feature.</h2>
+        <h2 class="mb-6">No calls required — and that's a feature.</h2>
         <div class="max-w-2xl space-y-4 text-muted leading-relaxed">
             <p>
                 Written communication produces a better record than a phone call. You get a scope document, not a memory of a conversation. I get to think carefully before I respond, not on the spot.

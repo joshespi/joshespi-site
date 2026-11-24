@@ -42,14 +42,6 @@
             'image' => 'crawlers',
         ],
         [
-            'tag' => 'Web App',
-            'title' => 'Soundboard',
-            'body' => 'Build your own soundboards from your uploaded audio clips, then play them from a big-button touch grid. Made for my son so he doesn\'t need to download sketchy soundboard apps.',
-            'url' => 'https://soundboard.joshespi.com/',
-            'github' => 'https://github.com/joshespi/soundboard',
-            'image' => 'soundboard',
-        ],
-        [
             'tag' => 'Family Site',
             'title' => 'Espi Family',
             'body' => 'A personal site for my family — a hub for our creative projects and a home base for our YouTube channel.',
@@ -75,32 +67,24 @@
     ];
 @endphp
 
-<section class="bg-ink text-white py-20 px-6">
-    <div class="max-w-4xl mx-auto">
-        <p class="font-mono text-brand text-sm tracking-widest uppercase mb-4 text-center">My Work</p>
-        <h1 class="text-4xl md:text-5xl font-black leading-tight mb-6 text-center">
-            Things I've built and shipped.
-        </h1>
-        <p class="text-white/70 text-xl max-w-2xl mx-auto text-center">
-            A mix of client work, personal tools, and projects I built purely for fun. Everything here is live.
-        </p>
-    </div>
-</section>
+<x-page-masthead label="My Work" heading="Things I've built and shipped.">
+    A mix of client work, personal tools, and projects I built purely for fun. Everything here is live.
+</x-page-masthead>
 
 <section class="py-20 px-6 bg-canvas">
-    <div class="max-w-6xl mx-auto grid md:grid-cols-2 lg:grid-cols-3 gap-5">
+    <div class="max-w-6xl mx-auto grid md:grid-cols-2 gap-9">
 
         @foreach($projects as $project)
-        <div class="bg-surface rounded-lg border border-border flex flex-col overflow-hidden">
+        <div @isset($project['image']) id="{{ $project['image'] }}" @endisset class="project-entry flex flex-col overflow-hidden">
             @isset($project['image'])
             <img src="/images/work/{{ $project['image'] }}.webp" alt="Screenshot of {{ $project['title'] }}"
                  width="1000" height="625" loading="lazy" decoding="async"
-                 class="w-full h-36 object-cover object-top border-b border-border">
+                 class="w-full aspect-[16/10] object-cover object-top border-b border-border">
             @endisset
-            <div class="p-6 flex flex-col flex-1">
+            <div class="pt-5 flex flex-col flex-1">
                 <p class="font-mono text-brand text-xs tracking-widest uppercase mb-2">{{ $project['tag'] }}</p>
-                <h3 class="text-lg font-bold mb-2">{{ $project['title'] }}</h3>
-                <p class="text-muted text-sm mb-4 flex-1">{{ $project['body'] }}</p>
+                <h2 class="text-2xl mb-2">{{ $project['title'] }}</h2>
+                <p class="text-muted text-base leading-relaxed mb-4 flex-1">{{ $project['body'] }}</p>
                 <div class="flex items-center gap-5">
                     <a href="{{ $project['url'] }}" target="_blank" rel="noopener noreferrer"
                        class="inline-flex items-center gap-2 font-mono text-sm text-brand hover:text-brand-dark transition-colors">
@@ -124,11 +108,25 @@
         @endforeach
 
     </div>
+
+    <div class="max-w-6xl mx-auto mt-12">
+        <h2 class="mb-4">Game Mods</h2>
+        <div class="flex flex-wrap gap-x-5 gap-y-3">
+            <a href="https://www.nexusmods.com/profile/joshespi/mods?gameId=11141" target="_blank" rel="noopener noreferrer"
+               class="font-mono text-sm text-brand hover:text-brand-dark transition-colors">
+                Nexus Mods profile
+            </a>
+            <a href="https://www.curseforge.com/members/the_espi/projects" target="_blank" rel="noopener noreferrer"
+               class="font-mono text-sm text-brand hover:text-brand-dark transition-colors">
+                CurseForge profile
+            </a>
+        </div>
+    </div>
 </section>
 
 <section class="py-20 px-6 bg-brand text-white">
     <div class="max-w-3xl mx-auto text-center">
-        <h2 class="text-3xl font-black mb-4">Want something built like this?</h2>
+        <h2 class="mb-4">Want something built like this?</h2>
         <p class="text-white/80 mb-8 text-lg">Fill the intake form. I'll respond in writing with a clear scope and price.</p>
         <a href="/services#intake"
            class="inline-block bg-white text-brand hover:bg-surface font-bold px-10 py-4 rounded text-lg transition-colors">
