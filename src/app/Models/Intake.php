@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
@@ -46,6 +47,7 @@ class Intake extends Model
             'status'               => IntakeStatus::class,
             'notification_sent_at' => 'datetime',
             'confirmation_sent_at' => 'datetime',
+            'tracker_sent_at'      => 'datetime',
         ];
     }
 
@@ -67,6 +69,12 @@ class Intake extends Model
                     $q->orWhereNull($email->sentAtColumn());
                 }
             });
+    }
+
+    /** Intakes the tracker has not received. Spam is left out, as in scopeUndelivered(). */
+    public function scopeUntracked(Builder $query): void
+    {
+        $query->where('status', '!=', IntakeStatus::Spam)->whereNull('tracker_sent_at');
     }
 
     public function isUndelivered(): bool
@@ -125,6 +133,52 @@ class Intake extends Model
         }
 
         $this->forceFill([$email->sentAtColumn() => now(), $email->errorColumn() => null])->save();
+
+        return true;
+    }
+
+    public static function trackerConfigured(): bool
+    {
+        return filled(config('services.tracker.url')) && filled(config('services.tracker.token'));
+    }
+
+    /**
+     * Hand this lead to Tradesman Tracker, where it waits for triage. Like deliver(), it never
+     * throws: the intake is already saved, and a down tracker must not cost the visitor a
+     * submission. The tracker de-duplicates on external_id, so a retry after a lost response
+     * is safe.
+     */
+    public function pushToTracker(): bool
+    {
+        if (! self::trackerConfigured()) {
+            return false;
+        }
+
+        try {
+            Http::withToken(config('services.tracker.token'))
+                ->acceptJson()
+                ->connectTimeout(3)
+                ->timeout(5)
+                ->post(rtrim(config('services.tracker.url'), '/') . '/api/v1/intakes', [
+                    'external_id' => 'joshespi-site-' . $this->id,
+                    'name'        => $this->name,
+                    'email'       => $this->email,
+                    'url'         => $this->url,
+                    'service'     => $this->service,
+                    'budget'      => $this->budget,
+                    'timeline'    => $this->timeline,
+                    'message'     => $this->message,
+                    'details'     => $this->details ?: null,
+                ])
+                ->throw();
+        } catch (Throwable $e) {
+            Log::warning("Intake #{$this->id}: tracker push failed", ['error' => $e->getMessage()]);
+            $this->forceFill(['tracker_error' => Str::limit($e->getMessage(), 1000)])->save();
+
+            return false;
+        }
+
+        $this->forceFill(['tracker_sent_at' => now(), 'tracker_error' => null])->save();
 
         return true;
     }

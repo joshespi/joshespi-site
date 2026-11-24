@@ -166,10 +166,11 @@ class IntakeForm extends Component
 
         RateLimiter::hit($key, 300);
 
-        // Saved before anything is emailed: the row is the lead. The mail goes
-        // out after the response, so the visitor never waits on SMTP, and a
-        // failure is only recorded on the row for the admin page or
-        // intake:resend to retry. A dead relay never costs a submission.
+        // Saved before anything is emailed: the row is the lead. The mail and
+        // the tracker push run after the response, so the visitor never waits
+        // on SMTP or the tracker, and a failure is only recorded on the row for
+        // the admin page, intake:resend or intake:push to retry. A dead relay
+        // or tracker never costs a submission.
         $intake = Intake::create([
             'name'     => $this->name,
             'email'    => $this->email,
@@ -184,6 +185,7 @@ class IntakeForm extends Component
         defer(function () use ($intake) {
             $intake->deliver(IntakeEmail::Notification);
             $intake->deliver(IntakeEmail::Confirmation);
+            $intake->pushToTracker();
         });
 
         $this->submitted = true;

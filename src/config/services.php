@@ -28,6 +28,13 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    // Tradesman Tracker: each saved intake is also pushed there for triage.
+    // Leave either value empty to turn the push off.
+    'tracker' => [
+        'url'   => env('TRACKER_URL', ''),
+        'token' => env('TRACKER_TOKEN', ''),
+    ],
+
     'slack' => [
         'notifications' => [
             'bot_user_oauth_token' => env('SLACK_BOT_USER_OAUTH_TOKEN'),
