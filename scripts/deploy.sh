@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 # Pulls the repo and brings the running stack up to date. Backs up the database and storage BEFORE
 # anything migrates, rebuilds images only when Docker files changed, then (re)starts the app
-# container: docker/entrypoint.sh owns composer, npm, the Vite build, migrate and the caches, and
-# runs on every container start, so a restart is the whole "install + migrate" step. Finally
+# container: docker/entrypoint.sh owns composer, npm ci, migrate and the caches, and runs on every
+# container start, so a restart is the whole "install + migrate" step. The entrypoint skips the
+# Vite build unless the lockfile changed, so the deploy runs `npm run build` itself. Finally
 # restarts the scheduler (schedule:work keeps old code loaded).
 # Usage: scripts/deploy.sh [--no-pull] [--rebuild] [--skip-backup]
 set -euo pipefail
@@ -79,6 +80,12 @@ until [ "$(docker inspect --format '{{.State.Health.Status}}' joshespi_app 2>/de
     fi
     sleep 3
 done
+
+# The entrypoint only builds when package-lock.json changed or the manifest is missing, so
+# stylesheet/JS/Blade edits would otherwise never reach public/build. Always build here.
+echo "==> npm run build"
+docker compose exec -T joshespi_app npm run build
+docker compose exec -T joshespi_app sh -c 'chown -R www-data:www-data public/build' || true
 
 echo "==> restart scheduler"
 docker compose restart joshespi_scheduler
