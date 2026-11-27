@@ -15,6 +15,13 @@ foreach (config('pages') as $page) {
     }
 }
 
+// Short link to hand out (joshespi.com/resume). Opens inline in the browser,
+// but saves as a real name instead of "resume.pdf". Replace resources/resume.pdf
+// to update it; the URL never changes. Kept out of public/ so this is the only URL.
+Route::get('/resume', fn () => response()->file(resource_path('resume.pdf'), [
+    'Content-Disposition' => 'inline; filename="Josh_Espinoza_Resume.pdf"',
+]))->middleware('cache.headers:public;max_age=3600');
+
 Route::get('/sitemap.xml', SitemapController::class)
     ->middleware('cache.headers:public;max_age=86400;etag');
 

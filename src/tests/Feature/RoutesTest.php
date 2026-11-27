@@ -13,6 +13,14 @@ class RoutesTest extends TestCase
         }
     }
 
+    public function test_resume_serves_the_pdf_inline_with_a_real_filename(): void
+    {
+        $this->get('/resume')
+            ->assertStatus(200)
+            ->assertHeader('Content-Type', 'application/pdf')
+            ->assertHeader('Content-Disposition', 'inline; filename="Josh_Espinoza_Resume.pdf"');
+    }
+
     public function test_unknown_route_renders_the_custom_404_page(): void
     {
         // Status alone would still pass on Laravel's stock error page.
