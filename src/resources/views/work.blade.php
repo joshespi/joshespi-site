@@ -65,6 +65,21 @@
             'image' => 'wowledger',
         ],
     ];
+
+    $mods = [
+        [
+            'platform' => 'CurseForge',
+            'title' => 'World of Warcraft addons',
+            'body' => 'Espi Utils, the WoW Flip Ledger companion addon, and small Paladin and Hunter helpers: quality-of-life tools I use every day.',
+            'url' => 'https://www.curseforge.com/members/the_espi/projects',
+        ],
+        [
+            'platform' => 'Nexus Mods',
+            'title' => 'Game mods',
+            'body' => 'Mods I\'ve published on Nexus Mods, free to download and install.',
+            'url' => 'https://www.nexusmods.com/profile/joshespi/mods?gameId=11141',
+        ],
+    ];
 @endphp
 
 <x-page-masthead label="My Work" heading="Things I've built and shipped.">
@@ -109,17 +124,26 @@
 
     </div>
 
-    <div class="max-w-6xl mx-auto mt-12">
-        <h2 class="mb-4">Game Mods</h2>
-        <div class="flex flex-wrap gap-x-5 gap-y-3">
-            <a href="https://www.nexusmods.com/profile/joshespi/mods?gameId=11141" target="_blank" rel="noopener noreferrer"
-               class="font-mono text-sm text-brand hover:text-brand-dark transition-colors">
-                Nexus Mods profile
+    <div id="mods" class="max-w-6xl mx-auto mt-20 pt-14 border-t border-border">
+        <p class="studio-label text-brand mb-3">Game Mods</p>
+        <h2 class="mb-3">Mods &amp; addons, too.</h2>
+        <p class="text-muted text-base leading-relaxed max-w-2xl mb-9">
+            When a game is missing something I want, I build it. These are published for anyone to download.
+        </p>
+        <div class="grid md:grid-cols-2 gap-7">
+            @foreach($mods as $mod)
+            <a href="{{ $mod['url'] }}" target="_blank" rel="noopener noreferrer" class="mod-card">
+                <span class="studio-label text-muted">{{ $mod['platform'] }}</span>
+                <strong>{{ $mod['title'] }}</strong>
+                <span class="text-muted leading-relaxed flex-1">{{ $mod['body'] }}</span>
+                <span class="mod-card-cta">
+                    View on {{ $mod['platform'] }}
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                    </svg>
+                </span>
             </a>
-            <a href="https://www.curseforge.com/members/the_espi/projects" target="_blank" rel="noopener noreferrer"
-               class="font-mono text-sm text-brand hover:text-brand-dark transition-colors">
-                CurseForge profile
-            </a>
+            @endforeach
         </div>
     </div>
 </section>

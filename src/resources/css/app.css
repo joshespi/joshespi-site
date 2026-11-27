@@ -100,7 +100,8 @@
 .studio-button { padding: .95rem 1.4rem; background: var(--color-ink); color: white; border-radius: .25rem; font-weight: 650; }
 .studio-button:hover { background: var(--color-brand); }
 .studio-link { font-weight: 600; text-decoration: underline; text-underline-offset: .32em; }
-.feature-print { display: block; min-width: 0; background: #fff; border: 1px solid var(--color-ink); box-shadow: 5px 5px 0 var(--color-ink); }
+.feature-print, .mod-card { background: #fff; border: 1px solid var(--color-ink); box-shadow: 5px 5px 0 var(--color-ink); }
+.feature-print { display: block; min-width: 0; }
 .print-art {
     display: grid; place-items: center; aspect-ratio: 1.36; overflow: hidden;
     background-color: #c86048;
@@ -111,8 +112,16 @@
 .screen-frame img { display: block; width: 100%; height: auto; }
 .print-caption { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 1.15rem 1.4rem; border-top: 1px solid var(--color-ink); }
 .print-caption strong { display: block; font: 500 2rem/1.15 var(--display); letter-spacing: -.04em; }
-.feature-print:hover strong { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: .14em; }
+.feature-print:hover strong, .mod-card:hover strong { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: .14em; }
 .print-category { font: .84rem var(--font-mono); color: var(--color-muted); }
+.mod-card {
+    display: flex; flex-direction: column; gap: .6rem; padding: 1.6rem 1.6rem 1.4rem;
+    transition: transform .15s ease, box-shadow .15s ease;
+}
+.mod-card strong { font: 500 1.85rem/1.15 var(--display); letter-spacing: -.04em; }
+.mod-card:hover { transform: translate(-2px, -2px); box-shadow: 7px 7px 0 var(--color-brand); }
+.mod-card-cta { display: inline-flex; align-items: center; gap: .5rem; margin-top: .6rem; font: .875rem var(--font-mono); color: var(--color-brand); }
+@media (prefers-reduced-motion: reduce) { .mod-card, .mod-card:hover { transition: none; transform: none; } }
 .service-summary { border-top: 2px solid var(--color-ink); padding: 1.4rem .6rem 0 0; }
 .page-masthead { padding-block: clamp(3rem, 7vw, 6rem); border-bottom: 1px solid var(--color-border); background: var(--color-surface); }
 .page-masthead h1 { font-size: clamp(3rem, 6.5vw, 6rem); line-height: 1; max-width: 17ch; }
