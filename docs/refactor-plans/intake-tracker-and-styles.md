@@ -11,6 +11,8 @@ Each section stands alone; pick one per session.
 
 **Proposed approach:** One queued job per side effect (`SendIntakeEmail`, `PushIntakeToTracker`) with `tries`/`backoff`, dispatched from `Intake::created` (skip spam) or from the form. `QUEUE_CONNECTION=database` is already in `.env.example`. Keep the `*_sent_at`/`*_error` columns as the record; the commands become a fallback.
 
+Both delivery methods record failures and return `false`. Skip the tracker job when `Intake::trackerConfigured()` is false. For attempted deliveries that return `false`, throw from the job so the worker applies its retry policy.
+
 **Risks / open questions:** Production needs a queue worker (container/supervisor). Is that acceptable, or should it stay `defer()`? Should the emails and the push move together? They should, for consistency.
 
 **Suggested scope:** In: the jobs, dispatch point, worker in docker-compose, and the test updates. Out: any change to what the emails or payload contain.

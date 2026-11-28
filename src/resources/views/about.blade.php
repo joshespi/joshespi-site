@@ -36,7 +36,7 @@
             <a href="/resume" target="_blank" rel="noopener noreferrer"
                class="flex items-center gap-2 mt-3 font-mono text-sm text-brand hover:text-brand-dark transition-colors">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v12m0 0l-4-4m4 4l4-4M5 20h14"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 3h8l4 4v14H6z M14 3v5h4 M9 12h6 M9 16h6"/>
                 </svg>
                 View my resume (PDF)
             </a>

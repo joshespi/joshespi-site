@@ -87,7 +87,7 @@
 .wordmark { font-weight: 650; letter-spacing: -.055em; font-size: 1.22rem; }
 .studio h1, .studio h2 { font-family: var(--display); font-weight: 500; letter-spacing: -.046em; }
 .studio section > div > h2 { font-size: clamp(2rem, 4vw, 3.7rem); line-height: 1.06; }
-.studio section[id], .project-entry { scroll-margin-top: 5.5rem; }
+.studio section[id], .project-entry, #mods { scroll-margin-top: 5.5rem; }
 .studio-hero { padding: clamp(3rem, 7vw, 6.5rem) 1.5rem; }
 .studio-intro { display: grid; grid-template-columns: 1fr .96fr; gap: clamp(2rem, 6vw, 6rem); align-items: center; }
 .studio-label { font: 600 .78rem/1.5 var(--font-mono); letter-spacing: .12em; text-transform: uppercase; }
